@@ -1,7 +1,7 @@
 import numpy as np
 import torch
 from sklearn.model_selection import train_test_split
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset
 
 from my_dataset import MyDataset
 
