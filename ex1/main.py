@@ -8,6 +8,7 @@ from training import train
 
 def run_single_training(train_loader, test_loader, hidden_layers_num, neurons_in_hidden_layers, activation_func):
     model = generate_model(hidden_layers_num, neurons_in_hidden_layers, activation_func)
+    print(model)
 
     criterion = nn.BCELoss()
     lr = 0.001
@@ -19,7 +20,7 @@ def run_single_training(train_loader, test_loader, hidden_layers_num, neurons_in
 
 def main():
     train_loader, test_loader = get_data()
-    accuracy = run_single_training(train_loader, test_loader, hidden_layers_num=2, neurons_in_hidden_layers=[32, 32],
+    accuracy = run_single_training(train_loader, test_loader, hidden_layers_num=0, neurons_in_hidden_layers=[],
                                    activation_func=None)
     print(accuracy)
 
