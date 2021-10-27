@@ -6,22 +6,21 @@ from models import generate_model
 from training import train
 
 
-def run_single_training(train_loader, test_loader, hidden_layers_num, neurons_in_hidden_layers, activation_func):
+def run_single_training(hidden_layers_num, neurons_in_hidden_layers, activation_func):
+    train_loader, test_loader = get_data()
     model = generate_model(hidden_layers_num, neurons_in_hidden_layers, activation_func)
     print(model)
 
     criterion = nn.BCELoss()
     lr = 0.001
-    train(model=model, train_loader=train_loader, epochs_num=2, criterion=criterion, lr=lr)
+    train(model=model, train_loader=train_loader, test_loader=test_loader, epochs_num=1, criterion=criterion, lr=lr)
 
     accuracy, recall, precision, f1 = evaluate(model=model, test_loader=test_loader)
     return accuracy
 
 
 def main():
-    train_loader, test_loader = get_data()
-    accuracy = run_single_training(train_loader, test_loader, hidden_layers_num=0, neurons_in_hidden_layers=[],
-                                   activation_func=None)
+    accuracy = run_single_training(hidden_layers_num=0, neurons_in_hidden_layers=[], activation_func=None)
     print(accuracy)
 
 

@@ -15,6 +15,7 @@ def get_labels_and_preds(model, test_loader):
 
             all_labels.append(labels[0][0].item())
             all_preds.append(preds[0][0].item())
+    model.train()
 
     return all_labels, all_preds
 
