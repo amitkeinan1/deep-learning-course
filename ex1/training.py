@@ -11,8 +11,16 @@ def get_loss(model, data_loader, criterion):
     loss_per_item = loss / len(data_loader)
     return loss_per_item
 
-def plot_losses(train_losses, test_losses):
-    pass
+
+def plot_losses(train_losses, test_losses, batch_counts):
+    plt.plot(batch_counts, train_losses, 'o--', label="train", alpha=0.8)
+    plt.plot(batch_counts, test_losses, 'o--', label="test", alpha=0.8)
+
+    plt.title("train and test losses")
+    plt.xlabel("batches count")
+    plt.ylabel("loss per item")
+    plt.legend()
+    plt.show()
 
 
 def train(model, train_loader, test_loader, epochs_num, criterion, lr):
@@ -20,7 +28,8 @@ def train(model, train_loader, test_loader, epochs_num, criterion, lr):
 
     train_losses = []
     test_losses = []
-    epochs_count = 0
+    batch_counts = []
+    batches_count = 0
 
     for epoch in range(epochs_num):
 
@@ -41,19 +50,18 @@ def train(model, train_loader, test_loader, epochs_num, criterion, lr):
                       (epoch + 1, i + 1, running_loss / 2000))
                 running_loss = 0.0
 
-            if epochs_count % 10000 == 0:
+            if batches_count % 10000 == 0:
                 train_loss = get_loss(model, train_loader, criterion)
                 test_loss = get_loss(model, test_loader, criterion)
                 train_losses.append(train_loss)
                 test_losses.append(test_loss)
+                batch_counts.append(batches_count)
                 print(f"train loss: {train_loss}")
                 print(f"test loss: {test_loss}")
 
-            epochs_count += 1
+            batches_count += 1
 
-    plt.plot(train_losses, 's--')
-    plt.plot(test_losses, 's--')
-    plt.show()
+    plot_losses(train_losses, test_losses, batch_counts)
 
     print('Finished Training')
 
