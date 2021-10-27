@@ -1,9 +1,9 @@
-from torch.utils.data import Dataset
+  from torch.utils.data import Dataset
 
 
 class MyDataset(Dataset):
-    def __init__(self, X, y):
-        self.X = X
+    def __init__(self, x, y):
+        self.X = x
         self.y = y
 
     def __len__(self):
