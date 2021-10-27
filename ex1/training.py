@@ -2,7 +2,7 @@ import torch.optim as optim
 import torch.nn as nn
 
 from data_handling import SEQUENCE_LEN, VOCABULARY
-from ff_net import FFNet
+from models import FFNet1Hidden
 
 
 def train(model, train_loader, epochs_num, criterion, lr):
@@ -30,7 +30,7 @@ def train(model, train_loader, epochs_num, criterion, lr):
 
 
 if __name__ == '__main__':
-    ff_net = FFNet(input_size=SEQUENCE_LEN * len(VOCABULARY))
+    ff_net = FFNet1Hidden(input_size=SEQUENCE_LEN * len(VOCABULARY))
     print(ff_net)
     criterion = nn.BCELoss()
     lr = 0.001
