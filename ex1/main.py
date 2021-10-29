@@ -50,12 +50,9 @@ def run_single_training(hidden_layers_num, neurons_in_hidden_layers, activation_
 
 def one_train():
     accuracy = run_single_training(hidden_layers_num=1, neurons_in_hidden_layers=[128], activation_func=None,
-                                   epochs_num=10)
+                                   epochs_num=75, criterion=nn.BCELoss(), train_name="")
     print(accuracy)
 
 
 if __name__ == '__main__':
-    learning_rates = [0.002]
-    lr_search(learning_rates)
-    # one_train()
-    # grid_search()
+    one_train()
