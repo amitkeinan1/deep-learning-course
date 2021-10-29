@@ -6,6 +6,7 @@ from models import generate_model
 from training import train
 
 BATCH_SIZE = 64
+LEARNING_RATE = 0.002
 
 
 def lr_search(learning_rates):
@@ -34,8 +35,8 @@ def architectural_params_search():
     print(results)
 
 
-def run_single_training(hidden_layers_num, neurons_in_hidden_layers, activation_func, epochs_num, batch_size, lr,
-                        criterion, train_name):
+def run_single_training(hidden_layers_num, neurons_in_hidden_layers, activation_func, epochs_num,
+                        criterion, train_name, batch_size=BATCH_SIZE, lr=LEARNING_RATE):
     train_loader, test_loader = get_data(batch_size)
     model = generate_model(hidden_layers_num, neurons_in_hidden_layers, activation_func)
     print(model)
@@ -49,7 +50,7 @@ def run_single_training(hidden_layers_num, neurons_in_hidden_layers, activation_
 
 def one_train():
     accuracy = run_single_training(hidden_layers_num=1, neurons_in_hidden_layers=[128], activation_func=None,
-                                   epochs_num=10, batch_size=BATCH_SIZE)
+                                   epochs_num=10)
     print(accuracy)
 
 
