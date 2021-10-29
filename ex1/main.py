@@ -7,6 +7,7 @@ from training import train
 
 BATCH_SIZE = 64
 LEARNING_RATE = 0.002
+EPOCHS_NUMBER = 25
 
 
 def lr_search(learning_rates):
@@ -35,10 +36,10 @@ def architectural_params_search():
     print(results)
 
 
-def run_single_training(hidden_layers_num, neurons_in_hidden_layers, activation_func, epochs_num,
-                        criterion, train_name, batch_size=BATCH_SIZE, lr=LEARNING_RATE):
+def run_single_training(hidden_layers_num, neurons_in_hidden_layers,
+                        criterion, train_name, epochs_num=EPOCHS_NUMBER, batch_size=BATCH_SIZE, lr=LEARNING_RATE):
     train_loader, test_loader = get_data(batch_size)
-    model = generate_model(hidden_layers_num, neurons_in_hidden_layers, activation_func)
+    model = generate_model(hidden_layers_num, neurons_in_hidden_layers)
     print(model)
 
     train(model=model, train_loader=train_loader, test_loader=test_loader, epochs_num=epochs_num, criterion=criterion,
@@ -49,8 +50,8 @@ def run_single_training(hidden_layers_num, neurons_in_hidden_layers, activation_
 
 
 def one_train():
-    accuracy = run_single_training(hidden_layers_num=1, neurons_in_hidden_layers=[128], activation_func=None,
-                                   epochs_num=75, criterion=nn.BCELoss(), train_name="")
+    accuracy = run_single_training(hidden_layers_num=1, neurons_in_hidden_layers=[128], criterion=nn.BCELoss(),
+                                   train_name="")
     print(accuracy)
 
 

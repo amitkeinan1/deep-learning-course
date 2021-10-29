@@ -7,7 +7,7 @@ from data_handling import VOCABULARY, SEQUENCE_LEN
 INPUT_SIZE = SEQUENCE_LEN * len(VOCABULARY)
 
 
-def generate_model(hidden_layers_num, neurons_in_hidden_layers, activation_func):
+def generate_model(hidden_layers_num, neurons_in_hidden_layers):
     assert(len(neurons_in_hidden_layers) == hidden_layers_num)
 
     if hidden_layers_num == 0:
@@ -25,16 +25,16 @@ def generate_model(hidden_layers_num, neurons_in_hidden_layers, activation_func)
     return model
 
 
-class FFNet0Hidden(nn.Module):
-
-    def __init__(self, input_size, hidden_layers_sizes):
-        super(FFNet0Hidden, self).__init__()
-        self.fc1 = nn.Linear(input_size, 1)
-
-    def forward(self, x):
-        x = self.fc1(x)
-        x = torch.sigmoid(x)
-        return x
+# class FFNet0Hidden(nn.Module):
+#
+#     def __init__(self, input_size, hidden_layers_sizes):
+#         super(FFNet0Hidden, self).__init__()
+#         self.fc1 = nn.Linear(input_size, 1)
+#
+#     def forward(self, x):
+#         x = self.fc1(x)
+#         x = torch.sigmoid(x)
+#         return x
 
 
 class FFNet1Hidden(nn.Module):
@@ -51,17 +51,17 @@ class FFNet1Hidden(nn.Module):
         return x
 
 
-class FFNet2Hidden(nn.Module):
-
-    def __init__(self, input_size, hidden_layers_sizes):
-        super(FFNet2Hidden, self).__init__()
-        self.fc1 = nn.Linear(input_size, hidden_layers_sizes[0])
-        self.fc2 = nn.Linear(hidden_layers_sizes[0], hidden_layers_sizes[1])
-        self.fc3 = nn.Linear(hidden_layers_sizes[1], 1)
-
-    def forward(self, x):
-        x = F.relu(self.fc1(x))
-        x = F.relu(self.fc2(x))
-        x = self.fc3(x)
-        x = torch.sigmoid(x)
-        return x
+# class FFNet2Hidden(nn.Module):
+#
+#     def __init__(self, input_size, hidden_layers_sizes):
+#         super(FFNet2Hidden, self).__init__()
+#         self.fc1 = nn.Linear(input_size, hidden_layers_sizes[0])
+#         self.fc2 = nn.Linear(hidden_layers_sizes[0], hidden_layers_sizes[1])
+#         self.fc3 = nn.Linear(hidden_layers_sizes[1], 1)
+#
+#     def forward(self, x):
+#         x = F.relu(self.fc1(x))
+#         x = F.relu(self.fc2(x))
+#         x = self.fc3(x)
+#         x = torch.sigmoid(x)
+#         return x

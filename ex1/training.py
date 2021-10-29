@@ -52,15 +52,15 @@ def train(model, train_loader, test_loader, epochs_num, criterion, lr, train_nam
                       (epoch + 1, i + 1, running_loss / 2000))
                 running_loss = 0.0
 
-            if total_batch % 1000 == 999:
+            if total_batch % 2000 == 1999:
                 print(total_batch)
-                # train_loss = get_loss(model, train_loader, criterion)
-                # test_loss = get_loss(model, test_loader, criterion)
-                # train_losses.append(train_loss)
-                # test_losses.append(test_loss)
-                # batch_counts.append(total_batch)
-                # print(f"train loss: {train_loss}")
-                # print(f"test loss: {test_loss}")
+                train_loss = get_loss(model, train_loader, criterion)
+                test_loss = get_loss(model, test_loader, criterion)
+                train_losses.append(train_loss)
+                test_losses.append(test_loss)
+                batch_counts.append(total_batch)
+                print(f"train loss: {train_loss}")
+                print(f"test loss: {test_loss}")
 
             total_batch += 1
 
