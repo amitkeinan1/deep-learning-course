@@ -37,7 +37,7 @@ def architectural_params_search():
     #                                2: [[16] * 2, [32] * 2, [64] * 2, [128] * 2, [256] * 2, [512] * 2, [1024] * 2],
     #                                5: [[128, 128, 128, 128, 128]]}
 
-    layers_num_and_neurons_nums = {i: [[256] * i] for i in range(1, 8)}
+    layers_num_and_neurons_nums = {i: [[256] * i] * 3 for i in [2, 5, 10]}
 
     for hidden_layers_num, neurons_nums_list in layers_num_and_neurons_nums.items():
         for neurons_nums in neurons_nums_list:
