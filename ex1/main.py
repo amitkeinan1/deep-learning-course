@@ -36,11 +36,12 @@ def run_single_training(hidden_layers_num, neurons_in_hidden_layers, activation_
     return accuracy
 
 
-def main():
+def one_train():
     accuracy = run_single_training(hidden_layers_num=1, neurons_in_hidden_layers=[128], activation_func=None,
                                    epochs_num=5)
     print(accuracy)
 
 
 if __name__ == '__main__':
-    grid_search()
+    one_train()
+    # grid_search()

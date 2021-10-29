@@ -29,12 +29,14 @@ def train(model, train_loader, test_loader, epochs_num, criterion, lr):
     train_losses = []
     test_losses = []
     batch_counts = []
-    batches_count = 0
+
+    total_batch = 0
 
     for epoch in range(epochs_num):
 
         running_loss = 0.0
-        for i, data_item in enumerate(train_loader, 0):
+        for batch, data_item in enumerate(train_loader, 0):
+            print(batch)
             inputs, labels = data_item
 
             optimizer.zero_grad()
@@ -45,21 +47,21 @@ def train(model, train_loader, test_loader, epochs_num, criterion, lr):
             optimizer.step()
 
             running_loss += loss.item()
-            if i % 2000 == 1999:  # print every 2000 mini-batches
-                # print('[%d, %5d] loss: %.3f' %
-                #       (epoch + 1, i + 1, running_loss / 2000))
+            if batch % 20 == 1999:  # print every 2000 mini-batches
+                print('[%d, %5d] loss: %.3f' %
+                      (epoch + 1, i + 1, running_loss / 2000))
                 running_loss = 0.0
 
-            if batches_count % 10000 == 0:
+            if batch % 100 == 0:
                 train_loss = get_loss(model, train_loader, criterion)
                 test_loss = get_loss(model, test_loader, criterion)
                 train_losses.append(train_loss)
                 test_losses.append(test_loss)
-                batch_counts.append(batches_count)
+                batch_counts.append(total_batch)
                 print(f"train loss: {train_loss}")
                 print(f"test loss: {test_loss}")
 
-            batches_count += 1
+            total_batch += 1
 
     plot_losses(train_losses, test_losses, batch_counts)
 

@@ -57,10 +57,10 @@ def get_data():
     X_train, X_test, y_train, y_test = split_and_encode(samples, labels, VOCABULARY)
 
     train_set = MyDataset(float_tensor_from_array(X_train), float_tensor_from_array(y_train))
-    train_loader = torch.utils.data.DataLoader(train_set)
+    train_loader = torch.utils.data.DataLoader(train_set, batch_size=64)
 
     test_set = MyDataset(float_tensor_from_array(X_test), float_tensor_from_array(y_test))
-    test_loader = torch.utils.data.DataLoader(test_set)
+    test_loader = torch.utils.data.DataLoader(test_set, batch_size=64)
 
     return train_loader, test_loader
 
