@@ -5,8 +5,20 @@ from evaluation import evaluate
 from models import generate_model
 from training import train
 
+BATCH_SIZE = 64
 
-def grid_search():
+
+def lr_search(learning_rates):
+    accuracies = []
+    for lr in learning_rates:
+        accuracy = run_single_training(hidden_layers_num=1, neurons_in_hidden_layers=[256], activation_func=None,
+                                       epochs_num=20, batch_size=BATCH_SIZE, lr=lr, criterion=nn.BCELoss(),
+                                       train_name=f"learning rate: {lr}")
+    accuracies.append(accuracy)
+    print({lr: accuracy for lr, accuracy in zip(learning_rates, accuracies)})
+
+
+def architectural_params_search():
     results = []
     layers_num_and_neurons_nums = {0: [[]],
                                    1: [[8 * (2 ** i)] for i in range(6)],
@@ -22,15 +34,14 @@ def grid_search():
     print(results)
 
 
-def run_single_training(hidden_layers_num, neurons_in_hidden_layers, activation_func, epochs_num):
-    train_loader, test_loader = get_data()
+def run_single_training(hidden_layers_num, neurons_in_hidden_layers, activation_func, epochs_num, batch_size, lr,
+                        criterion, train_name):
+    train_loader, test_loader = get_data(batch_size)
     model = generate_model(hidden_layers_num, neurons_in_hidden_layers, activation_func)
     print(model)
 
-    criterion = nn.BCELoss()
-    lr = 0.001
     train(model=model, train_loader=train_loader, test_loader=test_loader, epochs_num=epochs_num, criterion=criterion,
-          lr=lr)
+          lr=lr, train_name=train_name)
 
     accuracy, recall, precision, f1 = evaluate(model=model, test_loader=test_loader)
     return accuracy
@@ -38,10 +49,12 @@ def run_single_training(hidden_layers_num, neurons_in_hidden_layers, activation_
 
 def one_train():
     accuracy = run_single_training(hidden_layers_num=1, neurons_in_hidden_layers=[128], activation_func=None,
-                                   epochs_num=5)
+                                   epochs_num=10, batch_size=BATCH_SIZE)
     print(accuracy)
 
 
 if __name__ == '__main__':
-    one_train()
+    learning_rates = [0.002]
+    lr_search(learning_rates)
+    # one_train()
     # grid_search()

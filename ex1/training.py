@@ -12,18 +12,18 @@ def get_loss(model, data_loader, criterion):
     return loss_per_item
 
 
-def plot_losses(train_losses, test_losses, batch_counts):
+def plot_losses(train_losses, test_losses, batch_counts, train_name):
     plt.plot(batch_counts, train_losses, 'o--', label="train", alpha=0.8)
     plt.plot(batch_counts, test_losses, 'o--', label="test", alpha=0.8)
 
-    plt.title("train and test losses")
+    plt.title(f"train and test losses - {train_name}")
     plt.xlabel("batches count")
     plt.ylabel("loss per item")
     plt.legend()
     plt.show()
 
 
-def train(model, train_loader, test_loader, epochs_num, criterion, lr):
+def train(model, train_loader, test_loader, epochs_num, criterion, lr, train_name):
     optimizer = optim.SGD(model.parameters(), lr=lr, momentum=0.9)
 
     train_losses = []
@@ -33,10 +33,10 @@ def train(model, train_loader, test_loader, epochs_num, criterion, lr):
     total_batch = 0
 
     for epoch in range(epochs_num):
+        print(f"epoch {epoch}")
 
         running_loss = 0.0
         for batch, data_item in enumerate(train_loader, 0):
-            print(batch)
             inputs, labels = data_item
 
             optimizer.zero_grad()
@@ -52,7 +52,7 @@ def train(model, train_loader, test_loader, epochs_num, criterion, lr):
                       (epoch + 1, i + 1, running_loss / 2000))
                 running_loss = 0.0
 
-            if batch % 100 == 0:
+            if total_batch % 400 == 0:
                 train_loss = get_loss(model, train_loader, criterion)
                 test_loss = get_loss(model, test_loader, criterion)
                 train_losses.append(train_loss)
@@ -63,7 +63,7 @@ def train(model, train_loader, test_loader, epochs_num, criterion, lr):
 
             total_batch += 1
 
-    plot_losses(train_losses, test_losses, batch_counts)
+    plot_losses(train_losses, test_losses, batch_counts, train_name)
 
     print('Finished Training')
 
