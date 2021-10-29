@@ -20,6 +20,15 @@ def lr_search(learning_rates):
     print({lr: accuracy for lr, accuracy in zip(learning_rates, accuracies)})
 
 
+def loss_search(loss_functions):
+    accuracies = []
+    for loss in loss_functions:
+        accuracy = run_single_training(hidden_layers_num=1, neurons_in_hidden_layers=[256], criterion=loss,
+                                       train_name=f"loss function: {loss}")
+    accuracies.append(accuracy)
+    print({loss: accuracy for loss, accuracy in zip(loss_functions, accuracies)})
+
+
 def architectural_params_search():
     results = []
     layers_num_and_neurons_nums = {0: [[]],
@@ -56,4 +65,5 @@ def one_train():
 
 
 if __name__ == '__main__':
-    one_train()
+    loss_functions = [nn.BCELoss(), nn.HingeEmbeddingLoss()]
+    loss_search(loss_functions)
