@@ -7,8 +7,11 @@ from training import train
 
 BATCH_SIZE = 64
 LEARNING_RATE = 0.002
-EPOCHS_NUMBER = 25
+# EPOCHS_NUMBER = 25
+EPOCHS_NUMBER = 1
 CRITERION = nn.BCELoss()
+HIDDEN_LAYERS_NUM = 5
+NEURONS_IN_LAYERS = [256, 256, 256, 256, 256]
 
 
 def lr_search(learning_rates):
@@ -43,7 +46,8 @@ def architectural_params_search():
         for neurons_nums in neurons_nums_list:
             print("***")
             print(hidden_layers_num, neurons_nums)
-            accuracy = run_single_training(hidden_layers_num=hidden_layers_num, neurons_in_hidden_layers=neurons_nums, train_name="")
+            accuracy = run_single_training(hidden_layers_num=hidden_layers_num, neurons_in_hidden_layers=neurons_nums,
+                                           train_name="")
             results.append((hidden_layers_num, neurons_nums, accuracy))
 
         print("temp results")
@@ -53,7 +57,8 @@ def architectural_params_search():
     print(results)
 
 
-def run_single_training(hidden_layers_num, neurons_in_hidden_layers, train_name, criterion=CRITERION,
+def run_single_training(train_name="", hidden_layers_num=HIDDEN_LAYERS_NUM, neurons_in_hidden_layers=NEURONS_IN_LAYERS,
+                        criterion=CRITERION,
                         epochs_num=EPOCHS_NUMBER, batch_size=BATCH_SIZE,
                         lr=LEARNING_RATE):
     train_loader, test_loader = get_data(batch_size)
@@ -67,11 +72,5 @@ def run_single_training(hidden_layers_num, neurons_in_hidden_layers, train_name,
     return accuracy
 
 
-def one_train():
-    accuracy = run_single_training(hidden_layers_num=1, neurons_in_hidden_layers=[128], criterion=nn.BCELoss(),
-                                   train_name="")
-    print(accuracy)
-
-
 if __name__ == '__main__':
-    architectural_params_search()
+    run_single_training()

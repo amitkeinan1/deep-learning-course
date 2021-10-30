@@ -60,7 +60,7 @@ def get_data(batch_size):
     train_loader = torch.utils.data.DataLoader(train_set, batch_size=batch_size)
 
     test_set = MyDataset(float_tensor_from_array(X_test), float_tensor_from_array(y_test))
-    test_loader = torch.utils.data.DataLoader(test_set, batch_size=batch_size)
+    test_loader = torch.utils.data.DataLoader(test_set, batch_size=1)
 
     return train_loader, test_loader
 
