@@ -1,6 +1,9 @@
+import random
 import torch.optim as optim
 from matplotlib import pyplot as plt
-import random
+import os
+
+FIGS_PATH = r"C:\Users\AMIT\Google Drive\cloud\אקדמיה\נוכחיים\DL\deep-learning-course\ex1\figs"
 
 
 def get_loss(model, data_loader, criterion):
@@ -22,6 +25,7 @@ def plot_losses(train_losses, test_losses, batch_counts, train_name):
     plt.xlabel("batches count")
     plt.ylabel("loss per item")
     plt.legend()
+    plt.savefig(os.path.join(FIGS_PATH, str(random.random()) + ".png"))
     plt.show()
 
 
