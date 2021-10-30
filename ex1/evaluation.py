@@ -34,7 +34,6 @@ def evaluate(model, test_loader, verbose=True):
     true_positive_rate = tp / (tp + fn)
     assert recall == true_positive_rate
 
-
     if verbose:
         print(f"tn:{tn}, fp:{fp}, fn:{fn}, tp:{tp}")
         print(f"tp rate: {true_positive_rate}, tn rate: {true_negative_rate}")
@@ -44,5 +43,3 @@ def evaluate(model, test_loader, verbose=True):
         print(f"f1: {f1}")
 
     return accuracy, recall, precision, f1
-
-

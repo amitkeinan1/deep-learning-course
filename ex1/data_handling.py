@@ -18,9 +18,19 @@ def read_lines(file_path):
     return lines
 
 
+def oversample_negatives(pos_samples, neg_samples, oversampling_ratio):
+    neg_samples = neg_samples * oversampling_ratio
+    return pos_samples, neg_samples
+
+
 def load_samples(pos_path, neg_path):
     pos_samples = read_lines(pos_path)
     neg_samples = read_lines(neg_path)
+    print(f"positive: {len(pos_samples)}, negative: {len(neg_samples)}")
+    pos_neg_ratio = len(pos_samples) / len(neg_samples)
+    print(f"pos neg ratio: {pos_neg_ratio}")
+    pos_samples, neg_samples = oversample_negatives(pos_samples, neg_samples, int(pos_neg_ratio))
+    print(f"positive: {len(pos_samples)}, negative: {len(neg_samples)}")
     samples = pos_samples + neg_samples
     labels = [1.0 for _ in range(len(pos_samples))] + [0.0 for _ in range(len(neg_samples))]
     return samples, labels
