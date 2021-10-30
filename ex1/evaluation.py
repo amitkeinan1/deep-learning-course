@@ -22,14 +22,22 @@ def get_labels_and_preds(model, test_loader):
 
 def evaluate(model, test_loader, verbose=True):
     labels, preds = get_labels_and_preds(model, test_loader)
+
     tn, fp, fn, tp = confusion_matrix(labels, preds).ravel()
+
     accuracy = accuracy_score(labels, preds)
     recall = recall_score(labels, preds)
     precision = precision_score(labels, preds)
     f1 = f1_score(labels, preds)
 
+    true_negative_rate = tn / (tn + fp)
+    true_positive_rate = tp / (tp + fn)
+    assert recall == true_positive_rate
+
+
     if verbose:
         print(f"tn:{tn}, fp:{fp}, fn:{fn}, tp:{tp}")
+        print(f"tp rate: {true_positive_rate}, tn rate: {true_negative_rate}")
         print(f"accuracy: {accuracy}")
         print(f"recall: {recall}")
         print(f"precision: {precision}")
