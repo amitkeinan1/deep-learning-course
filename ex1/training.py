@@ -1,11 +1,13 @@
 import torch.optim as optim
 from matplotlib import pyplot as plt
+import random
 
 
 def get_loss(model, data_loader, criterion):
+    print(f" *** {len(data_loader)}")
     loss = 0.0
-    for data_item in data_loader:
-        inputs, labels = data_item
+    for batch in data_loader:
+        inputs, labels = batch
         outputs = model(inputs)
         loss += criterion(outputs, labels)
     loss_per_item = loss / len(data_loader)
@@ -52,7 +54,7 @@ def train(model, train_loader, test_loader, epochs_num, criterion, lr, train_nam
                       (epoch + 1, i + 1, running_loss / 2000))
                 running_loss = 0.0
 
-            if total_batch % 3000 == 2999:
+            if total_batch % 500 == 499:
                 print(total_batch)
                 train_loss = get_loss(model, train_loader, criterion)
                 test_loss = get_loss(model, test_loader, criterion)
