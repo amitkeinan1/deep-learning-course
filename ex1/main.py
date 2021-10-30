@@ -1,11 +1,12 @@
 from torch import nn
+import gc
 
 from data_handling import get_data, SEQUENCE_LEN, VOCABULARY
 from evaluation import evaluate
 from models import generate_model
 from training import train
 
-BATCH_SIZE = 64
+BATCH_SIZE = 32
 LEARNING_RATE = 0.002
 # EPOCHS_NUMBER = 25
 EPOCHS_NUMBER = 1
@@ -25,7 +26,9 @@ def lr_search(learning_rates=None):
         accuracy = run_single_training(hidden_layers_num=1, neurons_in_hidden_layers=[256],
                                        epochs_num=50, batch_size=BATCH_SIZE, lr=lr, criterion=nn.BCELoss(),
                                        train_name=f"learning rate: {lr}")
-    accuracies.append(accuracy)
+        accuracies.append(accuracy)
+        print(f"temp accuracies: {accuracies}")
+        gc.collect()
     print({lr: accuracy for lr, accuracy in zip(learning_rates, accuracies)})
 
 

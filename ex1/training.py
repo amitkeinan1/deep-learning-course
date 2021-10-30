@@ -2,12 +2,12 @@ import random
 import torch.optim as optim
 from matplotlib import pyplot as plt
 import os
+from tqdm import tqdm
 
 FIGS_PATH = r"C:\Users\AMIT\Google Drive\cloud\אקדמיה\נוכחיים\DL\deep-learning-course\ex1\figs"
 
 
 def get_loss(model, data_loader, criterion):
-    print(f" *** {len(data_loader)}")
     loss = 0.0
     for batch in data_loader:
         inputs, labels = batch
@@ -38,7 +38,7 @@ def train(model, train_loader, test_loader, epochs_num, criterion, lr, train_nam
 
     total_batch = 0
 
-    for epoch in range(epochs_num):
+    for epoch in tqdm(range(epochs_num)):
         print(f"epoch {epoch}")
 
         running_loss = 0.0
@@ -53,13 +53,12 @@ def train(model, train_loader, test_loader, epochs_num, criterion, lr, train_nam
             optimizer.step()
 
             running_loss += loss.item()
-            if batch % 20 == 1999:  # print every 2000 mini-batches
+            if batch % 1000 == 999:  # print every 2000 mini-batches
                 print('[%d, %5d] loss: %.3f' %
-                      (epoch + 1, i + 1, running_loss / 2000))
+                      (epoch + 1, batch + 1, running_loss / 2000))
                 running_loss = 0.0
 
-            if total_batch % 500 == 499:
-                print(total_batch)
+            if total_batch % 1000 == 999:
                 train_loss = get_loss(model, train_loader, criterion)
                 test_loss = get_loss(model, test_loader, criterion)
                 train_losses.append(train_loss)
