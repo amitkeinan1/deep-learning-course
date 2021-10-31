@@ -6,10 +6,13 @@ from evaluation import evaluate
 from models import generate_model
 from training import train
 
-BATCH_SIZE = 32
-LEARNING_RATE = 0.002
-# EPOCHS_NUMBER = 25
-EPOCHS_NUMBER = 1
+BATCH_SIZE = 64
+
+LEARNING_RATE = 0.001
+# LEARNING_RATE = 0.005
+
+EPOCHS_NUMBER = 5
+# EPOCHS_NUMBER = 75
 CRITERION = nn.BCELoss()
 # HIDDEN_LAYERS_NUM = 5
 HIDDEN_LAYERS_NUM = 1
@@ -24,7 +27,7 @@ def lr_search(learning_rates=None):
     accuracies = []
     for lr in learning_rates:
         accuracy = run_single_training(hidden_layers_num=1, neurons_in_hidden_layers=[256],
-                                       epochs_num=50, batch_size=BATCH_SIZE, lr=lr, criterion=nn.BCELoss(),
+                                       epochs_num=40, batch_size=BATCH_SIZE, lr=lr, criterion=nn.BCELoss(),
                                        train_name=f"learning rate: {lr}")
         accuracies.append(accuracy)
         print(f"temp accuracies: {accuracies}")
@@ -81,4 +84,4 @@ def run_single_training(train_name="", hidden_layers_num=HIDDEN_LAYERS_NUM, neur
 
 
 if __name__ == '__main__':
-    lr_search()
+    run_single_training()
