@@ -7,12 +7,9 @@ from models import generate_model
 from training import train
 
 BATCH_SIZE = 64
+LEARNING_RATE = 0.005
+EPOCHS_NUMBER = 70
 
-LEARNING_RATE = 0.001
-# LEARNING_RATE = 0.005
-
-EPOCHS_NUMBER = 5
-# EPOCHS_NUMBER = 75
 CRITERION = nn.BCELoss()
 # HIDDEN_LAYERS_NUM = 5
 HIDDEN_LAYERS_NUM = 1
@@ -46,12 +43,12 @@ def loss_search(loss_functions):
 
 def architectural_params_search():
     results = []
-    # layers_num_and_neurons_nums = {0: [[]],
-    #                                1: [[32], [64], [128], [256], [512], [1024], [2048]],
-    #                                2: [[16] * 2, [32] * 2, [64] * 2, [128] * 2, [256] * 2, [512] * 2, [1024] * 2],
-    #                                5: [[128, 128, 128, 128, 128]]}
+    layers_num_and_neurons_nums = {0: [[]],
+                                   1: [[32], [64], [128], [256], [512], [1024], [2048]],
+                                   2: [[16] * 2, [32] * 2, [64] * 2, [128] * 2, [256] * 2, [512] * 2, [1024] * 2],
+                                   5: [[128, 128, 128, 128, 128]]}
 
-    layers_num_and_neurons_nums = {i: [[256] * i] * 3 for i in [2, 5, 10]}
+    # layers_num_and_neurons_nums = {i: [[256] * i] * 3 for i in [2, 5, 10]}
 
     for hidden_layers_num, neurons_nums_list in layers_num_and_neurons_nums.items():
         for neurons_nums in neurons_nums_list:
