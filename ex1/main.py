@@ -74,7 +74,12 @@ def run_single_training(train_name="", hidden_layers_num=HIDDEN_LAYERS_NUM, neur
     train(model=model, train_loader=train_loader, test_loader=test_loader, epochs_num=epochs_num, criterion=criterion,
           lr=lr, train_name=train_name)
 
+    print("test metrics")
     accuracy, recall, precision, f1, tpr, tnr = evaluate(model=model, test_loader=test_loader)
+
+    print("train metrics")
+    accuracy, recall, precision, f1, tpr, tnr = evaluate(model=model, test_loader=train_loader)
+
     return accuracy
 
 

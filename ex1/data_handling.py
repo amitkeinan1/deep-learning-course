@@ -79,7 +79,7 @@ def get_data(batch_size):
     samples, labels = load_samples(POS_SAMPLES_PATH, NEG_SAMPLES_PATH)
     X_train, X_test, y_train, y_test = split_and_encode(samples, labels, VOCABULARY)
 
-    # X_train, y_train = oversample_negatives(X_train, y_train)
+    X_train, y_train = oversample_negatives(X_train, y_train)
 
     train_set = MyDataset(float_tensor_from_array(X_train), float_tensor_from_array(y_train))
     train_loader = torch.utils.data.DataLoader(train_set, batch_size=batch_size)
