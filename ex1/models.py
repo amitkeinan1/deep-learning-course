@@ -10,20 +10,20 @@ INPUT_SIZE = SEQUENCE_LEN * len(VOCABULARY)
 def generate_model(hidden_layers_num, neurons_in_hidden_layers):
     assert (len(neurons_in_hidden_layers) == hidden_layers_num)
 
-    # if hidden_layers_num == 0:
-    #     model = FFNet0Hidden(INPUT_SIZE, neurons_in_hidden_layers)
+    if hidden_layers_num == 0:
+        model = FFNet0Hidden(INPUT_SIZE, neurons_in_hidden_layers)
 
-    if hidden_layers_num == 1:
+    elif hidden_layers_num == 1:
         model = FFNet1Hidden(INPUT_SIZE, neurons_in_hidden_layers)
 
-    # elif hidden_layers_num == 2:
-    #     model = FFNet2Hidden(INPUT_SIZE, neurons_in_hidden_layers)
-    #
-    # elif hidden_layers_num == 5:
-    #     model = FFNet5Hidden(INPUT_SIZE, neurons_in_hidden_layers)
-    #
-    # elif hidden_layers_num == 10:
-    #     model = FFNet10Hidden(INPUT_SIZE, neurons_in_hidden_layers)
+    elif hidden_layers_num == 2:
+        model = FFNet2Hidden(INPUT_SIZE, neurons_in_hidden_layers)
+
+    elif hidden_layers_num == 5:
+        model = FFNet5Hidden(INPUT_SIZE, neurons_in_hidden_layers)
+
+    elif hidden_layers_num == 10:
+        model = FFNet10Hidden(INPUT_SIZE, neurons_in_hidden_layers)
 
     else:
         raise Exception(f"we don't support {hidden_layers_num} hidden layers")

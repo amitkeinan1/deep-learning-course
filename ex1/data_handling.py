@@ -1,9 +1,9 @@
 import numpy as np
 import torch
 from sklearn.model_selection import train_test_split
-from torch.utils.data import Dataset
+import random
 
-from my_dataset import MyDataset
+from ex1.my_dataset import MyDataset
 
 POS_SAMPLES_PATH = "data\\neg_A0201.txt"
 NEG_SAMPLES_PATH = "data\\pos_A0201.txt"
@@ -18,18 +18,31 @@ def read_lines(file_path):
     return lines
 
 
-def oversample_negatives(pos_samples, neg_samples, oversampling_ratio):
+def oversample_negatives(X_train, y_train):
+    pos_samples = [(x, y) for x, y in zip(X_train, y_train) if y == 1]
+    neg_samples = [(x, y) for x, y in zip(X_train, y_train) if y == 0]
+
+    pos_neg_ratio = len(pos_samples) / len(neg_samples)
+    print(f"train pos neg ratio: {pos_neg_ratio}")
+    oversampling_ratio = int(pos_neg_ratio)
+
     neg_samples = neg_samples * oversampling_ratio
-    return pos_samples, neg_samples
+
+    pos_neg_ratio = len(pos_samples) / len(neg_samples)
+    print(f"after oversampling - train pos neg ratio: {pos_neg_ratio}")
+
+    all_samples = pos_samples + neg_samples
+    random.shuffle(all_samples)
+
+    X_train = [sample[0] for sample in all_samples]
+    y_train = [sample[1] for sample in all_samples]
+
+    return X_train, y_train
 
 
 def load_samples(pos_path, neg_path):
     pos_samples = read_lines(pos_path)
     neg_samples = read_lines(neg_path)
-    print(f"positive: {len(pos_samples)}, negative: {len(neg_samples)}")
-    pos_neg_ratio = len(pos_samples) / len(neg_samples)
-    print(f"pos neg ratio: {pos_neg_ratio}")
-    pos_samples, neg_samples = oversample_negatives(pos_samples, neg_samples, int(pos_neg_ratio))
     print(f"positive: {len(pos_samples)}, negative: {len(neg_samples)}")
     samples = pos_samples + neg_samples
     labels = [1.0 for _ in range(len(pos_samples))] + [0.0 for _ in range(len(neg_samples))]
@@ -65,6 +78,8 @@ def float_tensor_from_array(array):
 def get_data(batch_size):
     samples, labels = load_samples(POS_SAMPLES_PATH, NEG_SAMPLES_PATH)
     X_train, X_test, y_train, y_test = split_and_encode(samples, labels, VOCABULARY)
+
+    # X_train, y_train = oversample_negatives(X_train, y_train)
 
     train_set = MyDataset(float_tensor_from_array(X_train), float_tensor_from_array(y_train))
     train_loader = torch.utils.data.DataLoader(train_set, batch_size=batch_size)

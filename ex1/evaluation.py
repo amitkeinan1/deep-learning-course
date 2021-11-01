@@ -30,16 +30,16 @@ def evaluate(model, test_loader, verbose=True):
     precision = precision_score(labels, preds)
     f1 = f1_score(labels, preds)
 
-    true_negative_rate = tn / (tn + fp)
-    true_positive_rate = tp / (tp + fn)
-    assert recall == true_positive_rate
+    tpr = tp / (tp + fn)
+    tnr = tn / (tn + fp)
+    assert recall == tpr
 
     if verbose:
         print(f"tn:{tn}, fp:{fp}, fn:{fn}, tp:{tp}")
-        print(f"tp rate: {true_positive_rate}, tn rate: {true_negative_rate}")
+        print(f"tp rate: {tpr}, tn rate: {tnr}")
         print(f"accuracy: {accuracy}")
         print(f"recall: {recall}")
         print(f"precision: {precision}")
         print(f"f1: {f1}")
 
-    return accuracy, recall, precision, f1
+    return accuracy, recall, precision, f1, tpr, tnr

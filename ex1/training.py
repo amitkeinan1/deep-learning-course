@@ -42,7 +42,7 @@ def train(model, train_loader, test_loader, epochs_num, criterion, lr, train_nam
         print(f"epoch {epoch}")
 
         running_loss = 0.0
-        for batch, data_item in enumerate(train_loader, 0):
+        for batch, data_item in enumerate(train_loader):
             inputs, labels = data_item
 
             optimizer.zero_grad()
@@ -58,7 +58,7 @@ def train(model, train_loader, test_loader, epochs_num, criterion, lr, train_nam
                       (epoch + 1, batch + 1, running_loss / 2000))
                 running_loss = 0.0
 
-            if total_batch % 20000 == 19999:
+            if total_batch % 500 == 499:
                 train_loss = get_loss(model, train_loader, criterion)
                 test_loss = get_loss(model, test_loader, criterion)
                 train_losses.append(train_loss)
