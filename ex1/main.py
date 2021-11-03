@@ -1,3 +1,4 @@
+import torch
 from torch import nn
 import gc
 
@@ -13,6 +14,8 @@ EPOCHS_NUMBER = 40
 CRITERION = nn.BCELoss()
 HIDDEN_LAYERS_NUM = 2
 NEURONS_IN_LAYERS = [128, 128]
+
+MODEL_SAVE_PATH = r"C:\Users\AMIT\Google Drive\cloud\אקדמיה\נוכחיים\DL\deep-learning-course\ex1\models\model1.torch"
 
 
 def lr_search(learning_rates=None):
@@ -69,10 +72,11 @@ def run_single_training(train_name="", hidden_layers_num=HIDDEN_LAYERS_NUM, neur
                         lr=LEARNING_RATE):
     train_loader, test_loader = get_data(batch_size)
     model = generate_model(hidden_layers_num, neurons_in_hidden_layers)
-    print(model)
 
     train(model=model, train_loader=train_loader, test_loader=test_loader, epochs_num=epochs_num, criterion=criterion,
           lr=lr, train_name=train_name)
+
+    torch.save(model.state_dict(), MODEL_SAVE_PATH)
 
     print("test metrics")
     accuracy, recall, precision, f1, tpr, tnr = evaluate(model=model, test_loader=test_loader)
