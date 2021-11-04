@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from data_handling import VOCABULARY, SEQUENCE_LEN
+from ex1.data_handling import VOCABULARY, SEQUENCE_LEN
 
 INPUT_SIZE = SEQUENCE_LEN * len(VOCABULARY)
 
