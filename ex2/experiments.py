@@ -2,6 +2,7 @@ from Train import train_network
 
 MODELS_OUTPUT_DIR = "models"
 
+
 def rnn_experiment():
     batch_size = [16, 32, 64, 128]
     output_size = 2
@@ -14,7 +15,7 @@ def rnn_experiment():
     test_interval = 100
     att_size = 0
 
-    best_f1, best_accuracy, best_recall, best_precision = train_network(model_name="RNN",
+    best_f1, best_accuracy, best_recall, best_precision = train_network(model_name="GRU",
                                                                         output_size=output_size,
                                                                         hidden_size=64,
                                                                         num_epochs=num_epochs,
@@ -24,6 +25,8 @@ def rnn_experiment():
                                                                         learning_rate=0.001,
                                                                         test_interval=test_interval,
                                                                         output_dir=MODELS_OUTPUT_DIR)
-        print(best_f1, best_accuracy, best_recall, best_precision)
+    print(best_f1, best_accuracy, best_recall, best_precision)
+
 
 if __name__ == '__main__':
+    rnn_experiment()
