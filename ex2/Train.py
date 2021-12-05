@@ -176,8 +176,12 @@ def train_network(model_name,
             labels = labels.to('cpu').detach().numpy()
             # print_review(reviews_text[0], nump_subs[0, :, 0], nump_subs[0, :, 1], labels[0, 0], labels[0, 1])
 
+        print("********")
+        print("test metrics:")
         accuracy, recall, precision, f1, tpr, tnr, figure, figure_normalize = evaluate_model(model, test_dataset,
                                                                                              verbose=True)
+
+
         figure.savefig(os.path.join(model_path, model.name() + "_Confusion_matrix_without_normalization" + ".png"))
         figure_normalize.savefig(
             os.path.join(model_path, model.name() + "_Confusion_matrix_with_normalization" + ".png"))
@@ -194,9 +198,14 @@ def train_network(model_name,
                 os.path.join(model_path, model.name() + "_Best_Confusion_matrix_with_normalization" + ".png"))
         plt.close(figure)
         plt.close(figure_normalize)
+
+    test_final_metrics = evaluate_model(model, test_dataset, verbose=False)
+    train_final_metrics = evaluate_model(model, train_dataset, verbose=False)
+
     figure = plot_losses(train_loss_list, test_loss_list, itrrations, 'lala')
     figure.savefig(os.path.join(model_path, model.name() + "_TrainAndTest_Loss_Plot" + ".png"))
-    return best_f1, best_accuracy, best_recall, best_precision
+    # return best_f1, best_accuracy, best_recall, best_precision
+    return test_final_metrics, train_final_metrics
 
 
 def main():
