@@ -2,3 +2,5 @@
 .idea/
 
 ex2/.vector_cache/
+
+ex2/__pycache__/

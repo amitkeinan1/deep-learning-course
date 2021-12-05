@@ -1,6 +1,6 @@
 import os
 
-from sentiment_start import ExMLP,ExLRestSelfAtten,ExRNN,ExGRU
+from sentiment_start import ExMLP, ExLRestSelfAtten, ExRNN, ExGRU
 import torch as tr
 import torch
 from torch.nn.functional import pad
@@ -11,8 +11,11 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import accuracy_score, f1_score, recall_score, precision_score, confusion_matrix
 from evaluation import get_labels_and_preds, evaluate_model
 import datetime
+
 # from torchsummary import summary
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+
 # device = torch.device("cpu")
 
 def plot_losses(train_losses, test_losses, batch_counts, train_name):
@@ -28,31 +31,32 @@ def plot_losses(train_losses, test_losses, batch_counts, train_name):
     # plt.show()
     return figure
 
+
 def print_review(rev_text, sbs1, sbs2, lbl1, lbl2):
-    text =  rev_text[:20] if len(rev_text) > 20 else rev_text
+    text = rev_text[:20] if len(rev_text) > 20 else rev_text
     finale_text = ''
     for i in range(len(text)):
         word = text[i]
-        finale_text += '"'+ word+'"'+' scores: ['+str(sbs1[i])+',' +str(sbs2[i]) + '] \n'
+        finale_text += '"' + word + '"' + ' scores: [' + str(sbs1[i]) + ',' + str(sbs2[i]) + '] \n'
     final_predict_1 = np.mean(sbs1)
     final_predict_2 = np.mean(sbs2)
     finale_text += 'final_predict: [' + str(final_predict_1) + ',' + str(final_predict_2) + ']\n'
-    finale_text += 'true score: ['+ str(lbl1) + ','+ str(lbl2) +']\n'
+    finale_text += 'true score: [' + str(lbl1) + ',' + str(lbl2) + ']\n'
     print(finale_text)
 
 
 def train_network(model_name,
                   output_size,
                   hidden_size,
-                  output_dir = '',
+                  output_dir='',
                   num_epochs=10,
                   batch_size=32,
                   atten_size=0,
                   reload_model=False,
                   learning_rate=0.001,
                   test_interval=100,
-                  load_model_path = '',
-                  Best = False,
+                  load_model_path='',
+                  Best=False,
 
                   ):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -75,8 +79,8 @@ def train_network(model_name,
     if reload_model:
         if len(load_model_path):
             print("Reloading model")
-            tmp_model_name = "best_"+ model.name() if Best else model.name()
-            model.load_state_dict(torch.load(os.path.join(load_model_path, tmp_model_name+ ".pth")))
+            tmp_model_name = "best_" + model.name() if Best else model.name()
+            model.load_state_dict(torch.load(os.path.join(load_model_path, tmp_model_name + ".pth")))
         else:
             print('did not giv path to model')
 
@@ -85,7 +89,6 @@ def train_network(model_name,
 
     train_loss = 1.0
     test_loss = 1.0
-
 
     # training steps in which a test step is executed every test_interval
     train_loss_list = []
@@ -102,9 +105,9 @@ def train_network(model_name,
         now = datetime.datetime.now()
         time_stamp = now.strftime("%Y-%m-%d_%H%M")
         final_name = '_'.join((model_name, f"lr_{learning_rate}", f"HiddSize_{hidden_size}", f"AttSize_{atten_size}",
-                  f"BatchSize_{batch_size}", f"Epochs_{num_epochs}", time_stamp))
+                               f"BatchSize_{batch_size}", f"Epochs_{num_epochs}", time_stamp))
         model_path = os.path.join(output_dir, final_name)
-        os.makedirs(model_path,exist_ok=True)
+        os.makedirs(model_path, exist_ok=True)
     for epoch in range(num_epochs):
         itr = 0  # iteration counter within each epoch
 
@@ -165,7 +168,6 @@ def train_network(model_name,
                     f"Test Loss: {test_loss:.4f}"
                 )
 
-
                 # saving the model
                 torch.save(model, os.path.join(model_path, model.name() + ".pth"))
 
@@ -174,18 +176,22 @@ def train_network(model_name,
             labels = labels.to('cpu').detach().numpy()
             print_review(reviews_text[0], nump_subs[0, :, 0], nump_subs[0, :, 1], labels[0, 0], labels[0, 1])
 
-        accuracy, recall, precision, f1, tpr, tnr, figure, figure_normalize = evaluate_model(model, test_dataset, verbose=True)
-        figure.savefig(os.path.join(model_path, model.name() + "_Confusion_matrix_without_normalization"  + ".png"))
-        figure_normalize.savefig(os.path.join(model_path, model.name() + "_Confusion_matrix_with_normalization" + ".png"))
+        accuracy, recall, precision, f1, tpr, tnr, figure, figure_normalize = evaluate_model(model, test_dataset,
+                                                                                             verbose=True)
+        figure.savefig(os.path.join(model_path, model.name() + "_Confusion_matrix_without_normalization" + ".png"))
+        figure_normalize.savefig(
+            os.path.join(model_path, model.name() + "_Confusion_matrix_with_normalization" + ".png"))
         itrrations.append(epoch)
         train_loss_list.append(train_loss)
         test_loss_list.append(test_loss)
         if f1 >= best_f1:
             best_accuracy, best_recall, best_precision, best_f1 = (accuracy, recall, precision, f1)
 
-            torch.save(model, os.path.join(model_path, "best_"+model.name() + ".pth"))
-            figure.savefig(os.path.join(model_path, model.name() + "_Best_Confusion_matrix_without_normalization" + ".png"))
-            figure_normalize.savefig(os.path.join(model_path, model.name() + "_Best_Confusion_matrix_with_normalization" + ".png"))
+            torch.save(model, os.path.join(model_path, "best_" + model.name() + ".pth"))
+            figure.savefig(
+                os.path.join(model_path, model.name() + "_Best_Confusion_matrix_without_normalization" + ".png"))
+            figure_normalize.savefig(
+                os.path.join(model_path, model.name() + "_Best_Confusion_matrix_with_normalization" + ".png"))
         plt.close(figure)
         plt.close(figure_normalize)
     figure = plot_losses(train_loss_list, test_loss_list, itrrations, 'lala')
@@ -194,21 +200,21 @@ def train_network(model_name,
 
 
 if __name__ == '__main__':
-    batch_size = [16,32,64,128]
+    batch_size = [16, 32, 64, 128]
     output_size = 2
-    hidden_size = [64,80,96,112,128]  # to experiment with
+    hidden_size = [64, 80, 96, 112, 128]  # to experiment with
 
-    atten_size = [1,3,5,7]  # need atten > 0 for using restricted self atten
+    atten_size = [1, 3, 5, 7]  # need atten > 0 for using restricted self atten
     reload_model = False
     num_epochs = 30
-    learning_rate = [0.001, 0.005,0.01]
+    learning_rate = [0.001, 0.005, 0.01]
     test_interval = 100
-    output_dir = '/home/eldan/Uni/Models'
-    reload_model = False # reload model or not
-    best = False # load best model or last
-    model_path = '' # path to dir with models
+    output_dir = 'models'
+    reload_model = False  # reload model or not
+    best = False  # load best model or last
+    model_path = ''  # path to dir with models
     att_size = 0
-    for model_name in ['MLP','MLP_atten','GRU','RNN']:
+    for model_name in ['MLP', 'MLP_atten', 'GRU', 'RNN']:
         for lr in learning_rate:
             for b_s in batch_size:
                 for h_size in hidden_size:
@@ -226,13 +232,13 @@ if __name__ == '__main__':
                                                                                                 output_dir=output_dir)
                     else:
                         best_f1, best_accuracy, best_recall, best_precision = train_network(model_name,
-                                                                                              output_size,
-                                                                                              h_size,
-                                                                                              num_epochs=num_epochs,
-                                                                                              batch_size=b_s,
-                                                                                              atten_size=att_size,
-                                                                                              reload_model=reload_model,
-                                                                                              learning_rate=lr,
-                                                                                              test_interval=test_interval,
-                                                                                              output_dir = output_dir)
-        print(model_name +': ',best_f1, best_accuracy, best_recall, best_precision)
+                                                                                            output_size,
+                                                                                            h_size,
+                                                                                            num_epochs=num_epochs,
+                                                                                            batch_size=b_s,
+                                                                                            atten_size=att_size,
+                                                                                            reload_model=reload_model,
+                                                                                            learning_rate=lr,
+                                                                                            test_interval=test_interval,
+                                                                                            output_dir=output_dir)
+        print(model_name + ': ', best_f1, best_accuracy, best_recall, best_precision)
