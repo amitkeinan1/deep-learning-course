@@ -174,7 +174,7 @@ def train_network(model_name,
         if model.name() not in ['RNN', 'GRU']:
             nump_subs = sub_score.to('cpu').detach().numpy()
             labels = labels.to('cpu').detach().numpy()
-            print_review(reviews_text[0], nump_subs[0, :, 0], nump_subs[0, :, 1], labels[0, 0], labels[0, 1])
+            # print_review(reviews_text[0], nump_subs[0, :, 0], nump_subs[0, :, 1], labels[0, 0], labels[0, 1])
 
         accuracy, recall, precision, f1, tpr, tnr, figure, figure_normalize = evaluate_model(model, test_dataset,
                                                                                              verbose=True)
@@ -199,20 +199,17 @@ def train_network(model_name,
     return best_f1, best_accuracy, best_recall, best_precision
 
 
-if __name__ == '__main__':
+def main():
     batch_size = [16, 32, 64, 128]
     output_size = 2
     hidden_size = [64, 80, 96, 112, 128]  # to experiment with
 
     atten_size = [1, 3, 5, 7]  # need atten > 0 for using restricted self atten
     reload_model = False
-    num_epochs = 30
+    num_epochs = 1  # 30
     learning_rate = [0.001, 0.005, 0.01]
     test_interval = 100
     output_dir = 'models'
-    reload_model = False  # reload model or not
-    best = False  # load best model or last
-    model_path = ''  # path to dir with models
     att_size = 0
     for model_name in ['MLP', 'MLP_atten', 'GRU', 'RNN']:
         for lr in learning_rate:
@@ -242,3 +239,7 @@ if __name__ == '__main__':
                                                                                             test_interval=test_interval,
                                                                                             output_dir=output_dir)
         print(model_name + ': ', best_f1, best_accuracy, best_recall, best_precision)
+
+
+if __name__ == '__main__':
+    main()

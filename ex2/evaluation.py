@@ -5,6 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import itertools
 
+
 def get_labels_and_preds(model, test_loader):
     all_labels = []
     all_preds = []
@@ -39,16 +40,17 @@ def get_labels_and_preds(model, test_loader):
 
     return all_labels, all_preds
 
+
 def evaluate_model(model, test_loader, verbose=True):
     labels, preds = get_labels_and_preds(model, test_loader)
 
     cm = confusion_matrix(labels, preds)
     np.set_printoptions(precision=2)
-    figure = plot_confusion_matrix(cm, classes=['pos','neg'],
-                          title=model.name() + '_Confusion matrix without normalization')
+    figure = plot_confusion_matrix(cm, classes=['pos', 'neg'],
+                                   title=model.name() + '_Confusion matrix without normalization')
     plt.figure()
-    figure_normalize = plot_confusion_matrix(cm, classes=['pos','neg'], normalize=True,
-                          title=model.name() + '_Normalized confusion matrix')
+    figure_normalize = plot_confusion_matrix(cm, classes=['pos', 'neg'], normalize=True,
+                                             title=model.name() + '_Normalized confusion matrix')
     tn, fp, fn, tp = cm.ravel()
     accuracy = accuracy_score(labels, preds)
     recall = recall_score(labels, preds)
@@ -68,7 +70,6 @@ def evaluate_model(model, test_loader, verbose=True):
         print(f"f1: {f1}")
         # plt.show()
     return accuracy, recall, precision, f1, tpr, tnr, figure, figure_normalize
-
 
 
 def plot_confusion_matrix(cm, classes,
