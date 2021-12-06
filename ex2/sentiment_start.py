@@ -4,7 +4,6 @@ import torch.nn as nn
 import numpy as np
 import loader as ld
 
-
 # batch_size = 32
 # output_size = 2
 # hidden_size = 64  # to experiment with
@@ -21,6 +20,7 @@ import loader as ld
 # Loading dataset, use toy = True for obtaining a smaller dataset
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 
 # train_dataset, test_dataset, num_words, input_size = ld.get_data_set(batch_size)
 
@@ -56,7 +56,7 @@ class ExRNN(nn.Module):
         # RNN Cell weights
         self.in2hidden = nn.Linear(input_size + hidden_size, hidden_size).to(DEVICE)
         cur_output_size = hidden_size if hidden_size % 2 == 0 else hidden_size + 1
-
+        self.process_output1 = nn.Linear(hidden_size, hidden_size)
         self.layers_list = torch.nn.ModuleList()
         while cur_output_size > 32:
             input_size = cur_output_size
@@ -75,7 +75,7 @@ class ExRNN(nn.Module):
         process_1 = self.relu(self.process_output1(hidden))
         for cur_layer in self.layers_list:
             process_1 = cur_layer(process_1)
-        output = self.sigmoid(self.in2output(process_1))
+        output = self.sigmoid(self.in2output(process_1))[0]
 
         return output, hidden
 
@@ -213,7 +213,7 @@ class ExLRestSelfAtten(nn.Module):
         self.W_k = MatMul(hidden_size, hidden_size, use_bias=False)
         self.W_v = MatMul(hidden_size, hidden_size, use_bias=False)
         self.layers_list = torch.nn.ModuleList()
-        # self.cur_layer = MatMul(input_size, int(cur_output_size)).to(device)
+        # self.cur_layer = MatMul(input_size, int(cur_output_size)).to(DEVICE)
         cur_output_size = hidden_size if hidden_size % 2 == 0 else hidden_size + 1
         while cur_output_size > 32:
             input_size = cur_output_size
