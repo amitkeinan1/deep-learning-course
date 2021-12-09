@@ -44,7 +44,7 @@ def gru_and_hidden_size():
 def single_rnn_run():
     return train_network(model_name="RNN",
                          output_size=2,
-                         hidden_size=128,
+                         hidden_size=64,
                          num_epochs=30,
                          batch_size=32,
                          atten_size=None,
@@ -67,5 +67,18 @@ def single_mlp_run():
                          output_dir=MODELS_OUTPUT_DIR)
 
 
+def single_mlp_attention_run():
+    return train_network(model_name="MLP_atten",
+                         output_size=2,
+                         hidden_size=64,
+                         num_epochs=5,
+                         batch_size=32,
+                         atten_size=3,
+                         reload_model=False,
+                         learning_rate=0.001,
+                         test_interval=100,
+                         output_dir=MODELS_OUTPUT_DIR)
+
+
 if __name__ == '__main__':
-    single_rnn_run()
+    single_mlp_run()

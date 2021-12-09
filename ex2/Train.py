@@ -9,6 +9,8 @@ from evaluation import evaluate_model
 import datetime
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+
 # device = torch.device("cpu")
 
 def plot_losses(train_losses, test_losses, batch_counts, train_name):
@@ -62,7 +64,7 @@ def train_network(model_name,
     else:
         if atten_size > 0 and model_name in ["MLP_atten"]:
             # pass
-            model = ExLRestSelfAtten(input_size, output_size, hidden_size).to(device)
+            model = ExLRestSelfAtten(input_size, output_size, hidden_size, atten_size).to(device)
         else:
             model = ExMLP(input_size, output_size, hidden_size).to(device)
 
@@ -126,16 +128,16 @@ def train_network(model_name,
 
                 # Token-wise networks (MLP / MLP + Atten.)
 
-                sub_score = []
-                if atten_size > 0 and model_name in ["MLP_atten"]:
+                if model_name == "MLP_atten":
                     # MLP + atten
-                    sub_score, atten_weights = model(reviews)
-                else:
-                    # MLP
-                    sub_score = model(reviews)
-                    # sub_score.append(sub_score)
-                output = sub_score
-                # output = torch.mean(sub_score, 1)
+                    sub_scores, atten_weights = model(reviews)
+                else:  # MLP
+                    assert model_name == "MLP"
+                    sub_scores = model(reviews)
+
+                means = sub_scores.mean(axis=1)
+                softmax = torch.nn.Softmax(dim=1)
+                output = softmax(means)
 
             # cross-entropy loss
 
@@ -166,7 +168,7 @@ def train_network(model_name,
                 torch.save(model, os.path.join(model_path, model.name() + ".pth"))
 
         if model.name() not in ['RNN', 'GRU']:
-            nump_subs = sub_score.to('cpu').detach().numpy()
+            nump_subs = sub_scores.to('cpu').detach().numpy()
             labels = labels.to('cpu').detach().numpy()
             # print_review(reviews_text[0], nump_subs[0, :, 0], nump_subs[0, :, 1], labels[0, 0], labels[0, 1])
 
@@ -174,7 +176,6 @@ def train_network(model_name,
         print("test metrics:")
         accuracy, recall, precision, f1, tpr, tnr, figure, figure_normalize = evaluate_model(model, test_dataset,
                                                                                              verbose=True)
-
 
         figure.savefig(os.path.join(model_path, model.name() + "_Confusion_matrix_without_normalization" + ".png"))
         figure_normalize.savefig(

@@ -26,12 +26,15 @@ def get_labels_and_preds(model, test_loader):
                 sub_score = []
                 if model_name != 'MLP':
                     # MLP + atten
-                    output, atten_weights = model(reviews)
+                    sub_scores, atten_weights = model(reviews)
+
                 else:
                     # MLP
-                    output = model(reviews)
+                    sub_scores = model(reviews)
 
-                # output = torch.round(sub_score)
+                means = sub_scores.mean(axis=1)
+                softmax = torch.nn.Softmax(dim=1)
+                output = softmax(means)
 
             all_labels.extend(np.argmax(labels.to('cpu').numpy(), axis=1))
             all_preds.extend(np.argmax(output.to('cpu').numpy(), axis=1))

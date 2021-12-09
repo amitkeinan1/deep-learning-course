@@ -56,15 +56,16 @@ class ExRNN(nn.Module):
 
         # RNN Cell weights
         self.in2hidden = nn.Linear(input_size + hidden_size, hidden_size).to(DEVICE)
-        cur_output_size = hidden_size if hidden_size % 2 == 0 else hidden_size + 1
+        curr_output_size = hidden_size if hidden_size % 2 == 0 else hidden_size + 1
         self.process_output1 = nn.Linear(hidden_size, hidden_size)
         self.layers_list = torch.nn.ModuleList()
-        while cur_output_size > 32:
-            input_size = cur_output_size
-            cur_output_size = int(cur_output_size / 2)
-            self.cur_layer = MatMul(input_size, int(cur_output_size))
-            self.layers_list.append(self.cur_layer)
-        self.in2output = nn.Linear(cur_output_size, output_size).to(DEVICE)
+        # while curr_output_size > 32: #TODO: add
+        #     input_size = curr_output_size
+        #     curr_output_size = int(curr_output_size / 2)
+        #     self.curr_layer = MatMul(input_size, int(curr_output_size))
+        #     # self.curr_layer = nn.Linear(input_size, int(curr_output_size))
+        #     self.layers_list.append(self.curr_layer)
+        self.in2output = nn.Linear(curr_output_size, output_size).to(DEVICE)
 
     def name(self):
         return "RNN"
@@ -74,9 +75,9 @@ class ExRNN(nn.Module):
         combined = torch.cat((x.to(DEVICE), hidden_state.to(DEVICE)), 1).to(DEVICE)
         hidden = self.sigmoid(self.in2hidden(combined))
         process_1 = self.relu(self.process_output1(hidden))
-        for cur_layer in self.layers_list:
-            process_1 = cur_layer(process_1)
-        output = self.softmax(self.in2output(process_1))[0]
+        # for curr_layer in self.layers_list: # TODO: add
+        #     process_1 = curr_layer(process_1)
+        output = self.softmax(self.in2output(process_1))
 
         return output, hidden
 
@@ -167,7 +168,6 @@ class ExMLP(nn.Module):
 
         # In case you do not need to transfer the input in layers before going word for word the following
         #  layers should be put in the comment
-        # process_x = x
         process_x = self.layer1(x)
         process_x = self.ReLU(process_x)
         process_x = self.layer2(process_x)
@@ -178,31 +178,21 @@ class ExMLP(nn.Module):
                 process_x_per_word = cur_layer(process_x_per_word)
                 process_x_per_word = self.ReLU(process_x_per_word)
             process_x_per_word = self.layer3(process_x_per_word)
-            # process_x_per_word = self.sigmoid(process_x_per_word)
             process_x_per_word = self.ReLU(process_x_per_word)
             sub_scores.append(process_x_per_word)
-            # sub_scores.append(process_x)
         final_output = torch.stack(sub_scores).permute((1, 2, 0, 3))
-        # final_output = torch.stack(sub_scores)
 
-        # Todo -In case and need to make the sum then transfer it in sigmoid should use the two lines below
-        final_output = final_output[0].mean(axis=1)
-        x = self.softmax(final_output)
-        # x = self.sigmoid(final_output)
 
-        # x = self.sigmoid(final_output[0])
-
-        # x = final_output[0].mean(axis=1)
-
-        return x
+        return final_output[0]
 
 
 class ExLRestSelfAtten(nn.Module):
-    def __init__(self, input_size, output_size, hidden_size):
+    def __init__(self, input_size, output_size, hidden_size, atten_size):
         super(ExLRestSelfAtten, self).__init__()
 
         self.input_size = input_size
         self.output_size = output_size
+        self.atten_size = atten_size
         self.sqrt_hidden_size = np.sqrt(float(hidden_size))
         self.ReLU = torch.nn.ReLU()
         self.softmax = torch.nn.Softmax(2)
@@ -241,21 +231,21 @@ class ExLRestSelfAtten(nn.Module):
         # generating x in offsets between -atten_size and atten_size 
         # with zero padding at the ends
 
-        padded = pad(x, (0, 0, atten_size, atten_size, 0, 0))
+        padded = pad(x, (0, 0, self.atten_size, self.atten_size, 0, 0))
         x_nei = []
 
         vals = self.W_v(x)
-        padded_v = pad(vals, (0, 0, atten_size, atten_size, 0, 0))
+        padded_v = pad(vals, (0, 0, self.atten_size, self.atten_size, 0, 0))
         v_nei = []
 
-        for k in range(-atten_size, atten_size + 1):
+        for k in range(-self.atten_size, self.atten_size + 1):
             x_nei.append(torch.roll(padded, k, 1))
             v_nei.append(torch.roll(padded_v, k, 1))
 
         x_nei = torch.stack(x_nei, 2)
         v_nei = torch.stack(v_nei, 2)
-        x_nei = x_nei[:, atten_size:-atten_size, :]
-        vals = v_nei[:, atten_size:-atten_size, :]
+        x_nei = x_nei[:, self.atten_size:-self.atten_size, :]
+        vals = v_nei[:, self.atten_size:-self.atten_size, :]
 
         # vals = self.W_v(v_nei)
         keys = self.W_k(x_nei)
