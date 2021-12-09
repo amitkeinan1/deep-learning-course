@@ -88,7 +88,7 @@ def mlp_and_architecture():
         metrics = train_network(model_name="MLP",
                                 output_size=2,
                                 hidden_size=64,
-                                num_epochs=5,
+                                num_epochs=3,
                                 batch_size=32,
                                 atten_size=0,
                                 reload_model=False,
@@ -105,4 +105,4 @@ def mlp_and_architecture():
 
 
 if __name__ == '__main__':
-    mlp_and_architecture()
+    single_mlp_run()

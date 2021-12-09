@@ -3,7 +3,7 @@ from matplotlib import pyplot as plt
 
 
 def get_accuracies_by_dim():
-    with open('results/gru_and_hidden_size_metrics.pickle', 'rb') as f:
+    with open('results/mlp_and_architecture_metrics.pickle', 'rb') as f:
         results = pickle.load(f)
 
     hidden_state_dims = []
@@ -22,13 +22,13 @@ def get_accuracies_by_dim():
 
 def plot_accuracies_by_hidden_state_dim(hidden_state_dims, test_accuracies, train_accuracies):
     plt.figure()
-    plt.title("accuracies by hidden size dimension - GRU")
+    plt.title("accuracies by hidden size dimension - MLP")
     plt.xlabel("hidden size dim")
     plt.ylabel("accuracy")
     plt.plot(hidden_state_dims, test_accuracies, 'o--', label="test accuracy")
     plt.plot(hidden_state_dims, train_accuracies, 'o--', label="train accuracy")
     plt.legend()
-    plt.savefig('plots/gru-and-hidden-dim-size.png')
+    plt.savefig('plots/mlp_and_architecture_metrics.png')
 
 
 def main():
