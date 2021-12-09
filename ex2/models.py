@@ -59,12 +59,11 @@ class ExRNN(nn.Module):
         curr_output_size = hidden_size if hidden_size % 2 == 0 else hidden_size + 1
         self.process_output1 = nn.Linear(hidden_size, hidden_size)
         self.layers_list = torch.nn.ModuleList()
-        # while curr_output_size > 32: #TODO: add
-        #     input_size = curr_output_size
-        #     curr_output_size = int(curr_output_size / 2)
-        #     self.curr_layer = MatMul(input_size, int(curr_output_size))
-        #     # self.curr_layer = nn.Linear(input_size, int(curr_output_size))
-        #     self.layers_list.append(self.curr_layer)
+        while curr_output_size > 32:
+            curr_input_size = curr_output_size
+            curr_output_size = int(curr_output_size / 2)
+            self.curr_layer = MatMul(curr_input_size, int(curr_output_size))
+            self.layers_list.append(self.curr_layer)
         self.in2output = nn.Linear(curr_output_size, output_size).to(DEVICE)
 
     def name(self):
@@ -74,9 +73,10 @@ class ExRNN(nn.Module):
         # Implementation of RNN cell
         combined = torch.cat((x.to(DEVICE), hidden_state.to(DEVICE)), 1).to(DEVICE)
         hidden = self.sigmoid(self.in2hidden(combined))
-        process_1 = self.relu(self.process_output1(hidden))
-        # for curr_layer in self.layers_list: # TODO: add
-        #     process_1 = curr_layer(process_1)
+
+        process_1 = self.sigmoid(self.process_output1(hidden))  # TODO: why not combined
+        for curr_layer in self.layers_list:
+            process_1 = self.sigmoid(curr_layer(process_1)[0])
         output = self.softmax(self.in2output(process_1))
 
         return output, hidden
@@ -181,7 +181,6 @@ class ExMLP(nn.Module):
             process_x_per_word = self.ReLU(process_x_per_word)
             sub_scores.append(process_x_per_word)
         final_output = torch.stack(sub_scores).permute((1, 2, 0, 3))
-
 
         return final_output[0]
 
