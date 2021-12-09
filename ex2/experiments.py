@@ -17,19 +17,6 @@ def single_gru_run():
                          output_dir=MODELS_OUTPUT_DIR)
 
 
-def single_rnn_run():
-    return train_network(model_name="RNN",
-                         output_size=2,
-                         hidden_size=64,
-                         num_epochs=5,
-                         batch_size=32,
-                         atten_size=None,
-                         reload_model=False,
-                         learning_rate=0.001,
-                         test_interval=100,
-                         output_dir=MODELS_OUTPUT_DIR)
-
-
 def gru_and_hidden_size():
     hidden_sizes = [64, 80, 96, 112, 128]
     metrics_by_hidden_size = {}
@@ -52,6 +39,32 @@ def gru_and_hidden_size():
     print(metrics_by_hidden_size)
     with open('gru_and_hidden_size_metrics.pickle', 'wb') as handle:
         pickle.dump(metrics_by_hidden_size, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+
+def single_rnn_run():
+    return train_network(model_name="RNN",
+                         output_size=2,
+                         hidden_size=128,
+                         num_epochs=30,
+                         batch_size=32,
+                         atten_size=None,
+                         reload_model=False,
+                         learning_rate=0.0005,
+                         test_interval=100,
+                         output_dir=MODELS_OUTPUT_DIR)
+
+
+def single_mlp_run():
+    return train_network(model_name="MLP",
+                         output_size=2,
+                         hidden_size=256,
+                         num_epochs=30,
+                         batch_size=32,
+                         atten_size=0,
+                         reload_model=False,
+                         learning_rate=0.0005,
+                         test_interval=100,
+                         output_dir=MODELS_OUTPUT_DIR)
 
 
 if __name__ == '__main__':

@@ -1,12 +1,8 @@
 import torch
-from torchtext.legacy.data import Field
-import torchtext as tx
 from torchtext.vocab import GloVe
-from torchtext.datasets import IMDB
 from torchtext.data.utils import get_tokenizer
 import re
 from torch.utils.data import DataLoader
-from torchtext.data.functional import to_map_style_dataset
 import pandas as pd
 import os
 
