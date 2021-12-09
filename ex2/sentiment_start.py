@@ -2,7 +2,6 @@ import torch
 from torch.nn.functional import pad
 import torch.nn as nn
 import numpy as np
-import loader as ld
 
 # batch_size = 32
 # output_size = 2
@@ -53,6 +52,8 @@ class ExRNN(nn.Module):
         self.hidden_size = hidden_size
         self.sigmoid = torch.sigmoid
         self.relu = torch.nn.ReLU()
+        self.softmax = torch.nn.Softmax(dim=1)
+
         # RNN Cell weights
         self.in2hidden = nn.Linear(input_size + hidden_size, hidden_size).to(DEVICE)
         cur_output_size = hidden_size if hidden_size % 2 == 0 else hidden_size + 1
@@ -75,7 +76,7 @@ class ExRNN(nn.Module):
         process_1 = self.relu(self.process_output1(hidden))
         for cur_layer in self.layers_list:
             process_1 = cur_layer(process_1)
-        output = self.sigmoid(self.in2output(process_1))[0]
+        output = self.softmax(self.in2output(process_1))[0]
 
         return output, hidden
 
@@ -101,8 +102,7 @@ class ExGRU(nn.Module):
         self.sigmoid = torch.sigmoid
         self.tanh = torch.tanh
         self.relu = torch.nn.ReLU()
-        # self.Hhat2H =
-        # etc ...
+        self.softmax = torch.nn.Softmax(dim=1)
 
     def name(self):
         return "GRU"
@@ -124,7 +124,8 @@ class ExGRU(nn.Module):
 
         process1_output = self.relu(self.process_output1(hidden))
         process2_output = self.relu(self.process_output2(process1_output))
-        output = self.sigmoid(self.in2output(process2_output))
+        # output = self.sigmoid(self.in2output(process2_output))
+        output = self.softmax(self.in2output(process2_output))
         # missing implementation
 
         return output, hidden
@@ -140,7 +141,7 @@ class ExMLP(nn.Module):
 
         self.ReLU = torch.nn.ReLU()
         self.sigmoid = torch.sigmoid
-        # Token-wise MLP network weights
+        self.softmax = torch.nn.Softmax(dim=1)
 
         self.layer1 = MatMul(input_size, hidden_size)
         self.layer2 = MatMul(hidden_size, hidden_size)
@@ -177,20 +178,21 @@ class ExMLP(nn.Module):
                 process_x_per_word = cur_layer(process_x_per_word)
                 process_x_per_word = self.ReLU(process_x_per_word)
             process_x_per_word = self.layer3(process_x_per_word)
-            process_x_per_word = self.sigmoid(process_x_per_word)
-            # process_x_per_word = self.ReLU(process_x_per_word)
+            # process_x_per_word = self.sigmoid(process_x_per_word)
+            process_x_per_word = self.ReLU(process_x_per_word)
             sub_scores.append(process_x_per_word)
             # sub_scores.append(process_x)
         final_output = torch.stack(sub_scores).permute((1, 2, 0, 3))
         # final_output = torch.stack(sub_scores)
 
         # Todo -In case and need to make the sum then transfer it in sigmoid should use the two lines below
-        # final_output = final_output[0].sum(axis=1)
+        final_output = final_output[0].mean(axis=1)
+        x = self.softmax(final_output)
         # x = self.sigmoid(final_output)
 
-        x = self.sigmoid(final_output[0])
-        # Token-wise MLP network implementation
-        # rest
+        # x = self.sigmoid(final_output[0])
+
+        # x = final_output[0].mean(axis=1)
 
         return x
 

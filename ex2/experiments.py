@@ -57,12 +57,12 @@ def single_rnn_run():
 def single_mlp_run():
     return train_network(model_name="MLP",
                          output_size=2,
-                         hidden_size=256,
-                         num_epochs=30,
+                         hidden_size=64,
+                         num_epochs=5,
                          batch_size=32,
                          atten_size=0,
                          reload_model=False,
-                         learning_rate=0.0005,
+                         learning_rate=0.001,
                          test_interval=100,
                          output_dir=MODELS_OUTPUT_DIR)
 

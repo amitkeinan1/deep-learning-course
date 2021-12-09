@@ -1,6 +1,5 @@
 import torch
 from sklearn.metrics import accuracy_score, f1_score, recall_score, precision_score, confusion_matrix
-from enum import Enum
 import numpy as np
 import matplotlib.pyplot as plt
 import itertools
@@ -27,12 +26,12 @@ def get_labels_and_preds(model, test_loader):
                 sub_score = []
                 if model_name != 'MLP':
                     # MLP + atten
-                    sub_score, atten_weights = model(reviews)
+                    output, atten_weights = model(reviews)
                 else:
                     # MLP
-                    sub_score = model(reviews)
+                    output = model(reviews)
 
-                output = torch.mean(sub_score, 1)
+                # output = torch.round(sub_score)
 
             all_labels.extend(np.argmax(labels.to('cpu').numpy(), axis=1))
             all_preds.extend(np.argmax(output.to('cpu').numpy(), axis=1))

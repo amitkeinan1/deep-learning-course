@@ -1,21 +1,14 @@
 import os
-
 from sentiment_start import ExMLP, ExLRestSelfAtten, ExRNN, ExGRU
-import torch as tr
 import torch
-from torch.nn.functional import pad
 import torch.nn as nn
 import numpy as np
 import loader as ld
 import matplotlib.pyplot as plt
-from sklearn.metrics import accuracy_score, f1_score, recall_score, precision_score, confusion_matrix
-from evaluation import get_labels_and_preds, evaluate_model
+from evaluation import evaluate_model
 import datetime
 
-# from torchsummary import summary
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-
 # device = torch.device("cpu")
 
 def plot_losses(train_losses, test_losses, batch_counts, train_name):
@@ -82,7 +75,7 @@ def train_network(model_name,
             tmp_model_name = "best_" + model.name() if Best else model.name()
             model.load_state_dict(torch.load(os.path.join(load_model_path, tmp_model_name + ".pth")))
         else:
-            print('did not giv path to model')
+            print('did not give path to model')
 
     criterion = nn.CrossEntropyLoss().to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
@@ -141,7 +134,8 @@ def train_network(model_name,
                     # MLP
                     sub_score = model(reviews)
                     # sub_score.append(sub_score)
-                output = torch.mean(sub_score, 1)
+                output = sub_score
+                # output = torch.mean(sub_score, 1)
 
             # cross-entropy loss
 
@@ -202,7 +196,7 @@ def train_network(model_name,
     test_final_metrics = evaluate_model(model, test_dataset, verbose=False)
     train_final_metrics = evaluate_model(model, train_dataset, verbose=False)
 
-    figure = plot_losses(train_loss_list, test_loss_list, itrrations, 'lala')
+    figure = plot_losses(train_loss_list, test_loss_list, itrrations, '')
     figure.savefig(os.path.join(model_path, model.name() + "_TrainAndTest_Loss_Plot" + ".png"))
     # return best_f1, best_accuracy, best_recall, best_precision
     return test_final_metrics, train_final_metrics

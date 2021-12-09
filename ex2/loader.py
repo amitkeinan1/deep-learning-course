@@ -9,7 +9,7 @@ import os
 CSV_PATH = "IMDB Dataset.csv"
 
 WORLD_SIZE = int(os.getenv('WORLD_SIZE', 1))  # DPP
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")  #
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # device = torch.device("cpu")
 
 MAX_LENGTH = 100
