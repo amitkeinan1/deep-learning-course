@@ -4,7 +4,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 import matplotlib.pyplot as plt
 from torchvision import datasets, transforms
-from Models import *
+from ae_models import *
 import numpy as np
 import datetime
 import os
