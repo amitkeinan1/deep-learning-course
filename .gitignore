@@ -18,3 +18,6 @@ ex3/encoded_images
 *.pkl
 
 *.pth
+ex3/gan/__pycache__/
+
+ex3/ae/__pycache__/
