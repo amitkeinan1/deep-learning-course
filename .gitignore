@@ -10,3 +10,11 @@ ex2/__pycache__/
 ex1/__pycache__/
 
 ex3/__pycache__/
+
+ex3/ae_models
+
+ex3/encoded_images
+
+*.pkl
+
+*.pth
