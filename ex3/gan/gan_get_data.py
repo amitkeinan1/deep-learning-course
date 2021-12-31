@@ -37,6 +37,9 @@ def get_pretrained_ae():
                            "best_Autoencoder.pth")
     model = Autoencoder(latent_dim=latent_dim).to(DEVICE)
     model.load_state_dict(torch.load(os.path.join(ae_path), DEVICE))
+
+    model.eval()
+
     return model
 
 

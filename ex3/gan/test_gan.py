@@ -16,8 +16,6 @@ def latents_to_images(auto_encoder, latents_loader):
             images = auto_encoder.decoder.forward(latents)
             all_images += list(images)
 
-    auto_encoder.train()
-
     return images
 
 

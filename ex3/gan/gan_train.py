@@ -5,6 +5,7 @@ from matplotlib import pyplot as plt
 
 from ex3.gan.gan_get_data import get_encoded_mnist
 from ex3.gan.gan_models import Generator, Discriminator
+from ex3.gan.test_gan import show_latents_images
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -68,6 +69,8 @@ def train_gan():
             discriminator_optimizer.step()
 
             discriminator_losses.append(discriminator_loss.item())
+
+        show_latents_images(generated_enc_images.select(0, 1).reshape((1, 32)))
 
     plt.plot(generator_losses, color='r')
     plt.plot(discriminator_losses, color='b')
