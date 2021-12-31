@@ -3,17 +3,10 @@ from torch import nn
 from tqdm import tqdm
 from matplotlib import pyplot as plt
 
+from ex3.gan.config import NOISE_DIM, ENCODING_DIM, GEN_LEARNING_RATE, DIS_LEARNING_RATE, EPOCHS_NUM
 from ex3.gan.gan_get_data import get_encoded_mnist
-from ex3.gan.gan_models import Generator, Discriminator
-from ex3.gan.test_gan import show_latents_images
-
-DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-ENCODING_DIM = 32
-NOISE_DIM = ENCODING_DIM
-GEN_LEARNING_RATE = 0.001
-DIS_LEARNING_RATE = 0.0001
-EPOCHS_NUM = 10
+from ex3.gan.gan_models import Generator, Discriminator, generate_noise
+from ex3.gan.test_gan import test_gan_generator
 
 
 def train_gan():
@@ -41,7 +34,7 @@ def train_gan():
 
             generator_optimizer.zero_grad()
 
-            noise = torch.normal(mean=0.0, std=1.0, size=(batch_size, NOISE_DIM))  # TODO: make size batch X dim
+            noise = generate_noise(batch_size, NOISE_DIM)
             generated_enc_images = generator(noise)
 
             disc_out_on_gen = discriminator(generated_enc_images)
@@ -70,7 +63,7 @@ def train_gan():
 
             discriminator_losses.append(discriminator_loss.item())
 
-        show_latents_images(generated_enc_images.select(0, 1).reshape((1, 32)))
+        test_gan_generator(generator)
 
     plt.plot(generator_losses, color='r')
     plt.plot(discriminator_losses, color='b')

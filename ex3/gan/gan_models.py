@@ -33,3 +33,8 @@ class Discriminator(nn.Module):
         x = self.relu(self.linear1(x))
         x = self.sigmoid(self.linear2(x))
         return x
+
+
+def generate_noise(batch_size, noise_dim):
+    noise = torch.normal(mean=0.0, std=1.0, size=(batch_size, noise_dim))
+    return noise
