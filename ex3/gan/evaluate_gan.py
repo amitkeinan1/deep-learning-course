@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 
 from ex3.gan.config import NOISE_DIM, SAVE_DIR, ENCODING_DIM
 from ex3.gan.encoded_images_dataset import EncodedImagesDataset
-from ex3.gan.gan_get_data import get_pretrained_ae
+from ex3.gan.gan_get_data import get_pretrained_ae, get_mnist_data, get_encoded_mnist
 from ex3.gan.gan_models import generate_noise, Generator
 
 
@@ -60,6 +60,29 @@ def load_saved_gan_generator(training_name):
     return generator
 
 
+def show_random_mnist_images():
+    train_loader, test_loader = get_mnist_data()
+    for images, labels in test_loader:
+        show_images(images[:10], "mnist images")
+        break
+
+
+def show_random_ae_mnist_images():
+    encoded_train_images, encoded_test_images = get_encoded_mnist()
+    for images in encoded_test_images:
+        show_latents_images(images[:10], "mnist encoded and decoded")
+        break
+
+
+def show_gan_random_images(training_name):
+    generator = load_saved_gan_generator(training_name)
+    evaluate_gan_generator(generator, training_name)
+
+
 if __name__ == '__main__':
-    fake_latents = [torch.normal(0, 0, size=(32,)) for i in range(5)]
-    show_latents_images(fake_latents)
+    # show_random_mnist_images()
+    #
+    # show_random_ae_mnist_images()
+
+    training_name = "final3"
+    show_gan_random_images(training_name)

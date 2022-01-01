@@ -10,7 +10,7 @@ from ex3.gan.gan_get_data import get_encoded_mnist
 from ex3.gan.gan_models import Generator, Discriminator, generate_noise
 from ex3.gan.evaluate_gan import evaluate_gan_generator
 
-TRAINING_NAME = "final2"
+TRAINING_NAME = "final3"
 
 
 def plot_losses(generator_losses, discriminator_losses, title):
