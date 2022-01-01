@@ -1,11 +1,13 @@
+import os
+
 import torch
 from torch.utils.data import DataLoader
 from matplotlib import pyplot as plt
 
-from ex3.gan.config import NOISE_DIM
+from ex3.gan.config import NOISE_DIM, SAVE_DIR, ENCODING_DIM
 from ex3.gan.encoded_images_dataset import EncodedImagesDataset
 from ex3.gan.gan_get_data import get_pretrained_ae
-from ex3.gan.gan_models import generate_noise
+from ex3.gan.gan_models import generate_noise, Generator
 
 
 def latents_to_images(auto_encoder, latents_loader):
@@ -28,7 +30,7 @@ def show_images(images, title):
         plt.subplot(1, len(images), i + 1)
         plt.imshow(image[0])
         plt.axis('off')
-    plt.savefig(f"images/{title}.png")
+    plt.savefig(f"{SAVE_DIR}/images/{title}.png")
     plt.show()
     plt.close(figure)
 
@@ -40,7 +42,7 @@ def show_latents_images(latents, title):
     show_images(images, title)
 
 
-def test_gan_generator(generator, title):
+def evaluate_gan_generator(generator, title):
     generator.eval()
 
     with torch.no_grad():
@@ -49,6 +51,13 @@ def test_gan_generator(generator, title):
         show_latents_images(generated_enc_images, title)
 
     generator.train()
+
+
+def load_saved_gan_generator(training_name):
+    generator_path = os.path.join(SAVE_DIR, "gans", f"{training_name}-generator.model")
+    generator = Generator(input_dim=NOISE_DIM, output_dim=ENCODING_DIM)
+    generator.load_state_dict(torch.load(generator_path))
+    return generator
 
 
 if __name__ == '__main__':

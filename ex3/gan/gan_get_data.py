@@ -7,6 +7,7 @@ import os
 from tqdm import tqdm
 
 from ex3.ae.ae_models import Autoencoder
+from ex3.gan.config import SAVE_DIR
 from ex3.gan.encoded_images_dataset import EncodedImagesDataset
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -33,7 +34,8 @@ def get_pretrained_ae():
     print("get pretrained auto encoder")
 
     latent_dim = 32
-    ae_path = os.path.join("ae_models", "AE_model_latent_dim_32_lr_0.001_BatchSize_64_Epochs_20_2021-12-27_1113",
+    ae_path = os.path.join(SAVE_DIR, "ae_models",
+                           "AE_model_latent_dim_32_lr_0.001_BatchSize_64_Epochs_20_2021-12-27_1113",
                            "best_Autoencoder.pth")
     model = Autoencoder(latent_dim=latent_dim).to(DEVICE)
     model.load_state_dict(torch.load(os.path.join(ae_path), DEVICE))
@@ -74,8 +76,8 @@ def load_object(path):
 
 
 def get_encoded_mnist(reload=True):
-    train_pickle_path = "encoded_images/encoded_train_images.pkl"
-    test_pickle_path = "encoded_images/encoded_test_images.pkl"
+    train_pickle_path = f"{SAVE_DIR}/encoded_images/encoded_train_images.pkl"
+    test_pickle_path = f"{SAVE_DIR}/encoded_images/encoded_test_images.pkl"
     if reload:
         encoded_train_images = load_object(train_pickle_path)
         encoded_test_images = load_object(test_pickle_path)
@@ -92,4 +94,3 @@ def get_encoded_mnist(reload=True):
 
 if __name__ == '__main__':
     encoded_train_images, encoded_test_images = get_encoded_mnist(reload=False)
-

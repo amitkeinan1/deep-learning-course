@@ -1,14 +1,16 @@
+import os
+
 import torch
 from torch import nn
 from tqdm import tqdm
 from matplotlib import pyplot as plt
 
-from ex3.gan.config import NOISE_DIM, ENCODING_DIM, GEN_LEARNING_RATE, DIS_LEARNING_RATE, EPOCHS_NUM
+from ex3.gan.config import NOISE_DIM, ENCODING_DIM, GEN_LEARNING_RATE, DIS_LEARNING_RATE, EPOCHS_NUM, SAVE_DIR
 from ex3.gan.gan_get_data import get_encoded_mnist
 from ex3.gan.gan_models import Generator, Discriminator, generate_noise
-from ex3.gan.test_gan import test_gan_generator
+from ex3.gan.evaluate_gan import evaluate_gan_generator
 
-TRAINING_NAME = "final - 1"
+TRAINING_NAME = "final2"
 
 
 def plot_losses(generator_losses, discriminator_losses, title):
@@ -16,7 +18,7 @@ def plot_losses(generator_losses, discriminator_losses, title):
     plt.plot(generator_losses, color='r', label="generator")
     plt.plot(discriminator_losses, color='b', label="discriminator")
     plt.legend()
-    plt.savefig(f"plots/{title}.png")
+    plt.savefig(f"{SAVE_DIR}/plots/{title}.png")
     plt.show()
 
 
@@ -76,11 +78,13 @@ def train_gan():
 
         title = f"{TRAINING_NAME} - epoch {epoch_num}"
         plot_losses(generator_losses, discriminator_losses, title)
-        test_gan_generator(generator, title)
+        evaluate_gan_generator(generator, title)
 
     title = f"{TRAINING_NAME} - final"
     plot_losses(generator_losses, discriminator_losses, f"final - {TRAINING_NAME}")
-    test_gan_generator(generator, title)
+    evaluate_gan_generator(generator, title)
+    torch.save(generator.state_dict(), os.path.join(SAVE_DIR, "gans", f"{TRAINING_NAME}-generator.model"))
+    torch.save(discriminator.state_dict(), os.path.join(SAVE_DIR, "gans", f"{TRAINING_NAME}-discriminator.model"))
 
 
 if __name__ == '__main__':
