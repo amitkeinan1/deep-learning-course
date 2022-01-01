@@ -21,12 +21,13 @@ def latents_to_images(auto_encoder, latents_loader):
     return images
 
 
-def show_images(images):
+def show_images(images, title):
     figure = plt.figure(figsize=(len(images), 1))
     for i, image in enumerate(images):
         plt.subplot(1, len(images), i + 1)
         plt.imshow(image[0])
         plt.axis('off')
+    plt.savefig(f"images/{title}")
     plt.show()
     plt.close(figure)
 

@@ -8,6 +8,17 @@ from ex3.gan.gan_get_data import get_encoded_mnist
 from ex3.gan.gan_models import Generator, Discriminator, generate_noise
 from ex3.gan.test_gan import test_gan_generator
 
+TRAINING_NAME = "basic training"
+
+
+def plot_losses(generator_losses, discriminator_losses, title):
+    plt.title(f"training losses - {title}")
+    plt.plot(generator_losses, color='r', label="generator")
+    plt.plot(discriminator_losses, color='b', label="discriminator")
+    plt.legend()
+    plt.savefig(f"plots/{title}.png")
+    plt.show()
+
 
 def train_gan():
     train_data, test_data = get_encoded_mnist()
@@ -24,8 +35,8 @@ def train_gan():
     generator_optimizer = torch.optim.Adam(generator.parameters(), lr=GEN_LEARNING_RATE)
     discriminator_optimizer = torch.optim.Adam(discriminator.parameters(), lr=DIS_LEARNING_RATE)
 
-    for i in tqdm(range(EPOCHS_NUM)):
-        print(f"epoch {i + 1} from {EPOCHS_NUM} started")
+    for epoch_num in tqdm(range(EPOCHS_NUM)):
+        print(f"epoch {epoch_num + 1} from {EPOCHS_NUM} started")
 
         for real_enc_images in train_data:
             batch_size = real_enc_images.shape[0]
@@ -63,11 +74,10 @@ def train_gan():
 
             discriminator_losses.append(discriminator_loss.item())
 
+        plot_losses(generator_losses, discriminator_losses, f"epoch {epoch_num} - {TRAINING_NAME}")
         test_gan_generator(generator)
 
-    plt.plot(generator_losses, color='r')
-    plt.plot(discriminator_losses, color='b')
-    plt.show()
+    plot_losses(generator_losses, discriminator_losses, f"final - {TRAINING_NAME}")
 
 
 if __name__ == '__main__':

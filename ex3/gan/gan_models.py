@@ -24,14 +24,16 @@ class Discriminator(nn.Module):
     def __init__(self, input_dim):
         super(Discriminator, self).__init__()
         self.linear1 = nn.Linear(int(input_dim), 64)
-        self.linear2 = nn.Linear(64, 1)
+        self.linear2 = nn.Linear(64, 32)
+        self.linear3 = nn.Linear(32, 1)
 
         self.relu = nn.ReLU()
         self.sigmoid = nn.Sigmoid()
 
     def forward(self, x):
         x = self.relu(self.linear1(x))
-        x = self.sigmoid(self.linear2(x))
+        x = self.relu(self.linear2(x))
+        x = self.sigmoid(self.linear3(x))
         return x
 
 
