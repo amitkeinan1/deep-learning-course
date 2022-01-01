@@ -8,7 +8,7 @@ from tqdm import tqdm
 
 from ex3.ae.ae_models import Autoencoder
 from ex3.gan.config import SAVE_DIR
-from ex3.gan.encoded_images_dataset import GeneralDataset
+from ex3.gan.general_dataset import GeneralDataset
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 BATCH_SIZE = 32
@@ -93,4 +93,4 @@ def get_encoded_mnist(reload=True):
 
 
 if __name__ == '__main__':
-    encoded_train_images, encoded_test_images = get_encoded_mnist(reload=False)
+    get_encoded_mnist(reload=False)

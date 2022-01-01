@@ -5,7 +5,7 @@ from torch.utils.data import DataLoader
 from matplotlib import pyplot as plt
 
 from ex3.gan.config import NOISE_DIM, SAVE_DIR, ENCODING_DIM
-from ex3.gan.encoded_images_dataset import GeneralDataset
+from ex3.gan.general_dataset import GeneralDataset
 from ex3.gan.gan_get_data import load_pretrained_ae, get_mnist_data, get_encoded_mnist
 from ex3.gan.gan_models import generate_noise, Generator
 
