@@ -21,3 +21,7 @@ ex3/encoded_images
 ex3/gan/__pycache__/
 
 ex3/ae/__pycache__/
+
+ex3/images/
+
+ex3/plots/

@@ -8,7 +8,7 @@ from ex3.gan.gan_get_data import get_encoded_mnist
 from ex3.gan.gan_models import Generator, Discriminator, generate_noise
 from ex3.gan.test_gan import test_gan_generator
 
-TRAINING_NAME = "basic training"
+TRAINING_NAME = "final - 1"
 
 
 def plot_losses(generator_losses, discriminator_losses, title):
@@ -74,10 +74,13 @@ def train_gan():
 
             discriminator_losses.append(discriminator_loss.item())
 
-        plot_losses(generator_losses, discriminator_losses, f"epoch {epoch_num} - {TRAINING_NAME}")
-        test_gan_generator(generator)
+        title = f"{TRAINING_NAME} - epoch {epoch_num}"
+        plot_losses(generator_losses, discriminator_losses, title)
+        test_gan_generator(generator, title)
 
+    title = f"{TRAINING_NAME} - final"
     plot_losses(generator_losses, discriminator_losses, f"final - {TRAINING_NAME}")
+    test_gan_generator(generator, title)
 
 
 if __name__ == '__main__':

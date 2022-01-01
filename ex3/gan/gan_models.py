@@ -7,9 +7,12 @@ class Generator(nn.Module):
     def __init__(self, input_dim, output_dim):
         super(Generator, self).__init__()
 
-        self.linear1 = nn.Linear(int(input_dim), 64)
-        self.linear2 = nn.Linear(64, 32)
-        self.linear3 = nn.Linear(32, int(output_dim))
+        hidden_1_size = 64
+        hidden_2_size = 32
+
+        self.linear1 = nn.Linear(int(input_dim), hidden_1_size)
+        self.linear2 = nn.Linear(hidden_1_size, hidden_2_size)
+        self.linear3 = nn.Linear(hidden_2_size, int(output_dim))
 
         self.relu = nn.ReLU()
 
@@ -23,9 +26,11 @@ class Generator(nn.Module):
 class Discriminator(nn.Module):
     def __init__(self, input_dim):
         super(Discriminator, self).__init__()
-        self.linear1 = nn.Linear(int(input_dim), 64)
-        self.linear2 = nn.Linear(64, 32)
-        self.linear3 = nn.Linear(32, 1)
+        hidden_1_size = 64
+        hidden_2_size = 32
+        self.linear1 = nn.Linear(int(input_dim), hidden_1_size)
+        self.linear2 = nn.Linear(hidden_1_size, hidden_2_size)
+        self.linear3 = nn.Linear(hidden_2_size, 1)
 
         self.relu = nn.ReLU()
         self.sigmoid = nn.Sigmoid()

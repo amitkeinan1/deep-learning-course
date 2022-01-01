@@ -23,29 +23,30 @@ def latents_to_images(auto_encoder, latents_loader):
 
 def show_images(images, title):
     figure = plt.figure(figsize=(len(images), 1))
+    plt.title(title)
     for i, image in enumerate(images):
         plt.subplot(1, len(images), i + 1)
         plt.imshow(image[0])
         plt.axis('off')
-    plt.savefig(f"images/{title}")
+    plt.savefig(f"images/{title}.png")
     plt.show()
     plt.close(figure)
 
 
-def show_latents_images(latents):
+def show_latents_images(latents, title):
     latents_loader = DataLoader(EncodedImagesDataset(latents), batch_size=32)
     auto_encoder = get_pretrained_ae()
     images = latents_to_images(auto_encoder, latents_loader)
-    show_images(images)
+    show_images(images, title)
 
 
-def test_gan_generator(generator):
+def test_gan_generator(generator, title):
     generator.eval()
 
     with torch.no_grad():
         noise = generate_noise(10, NOISE_DIM)
         generated_enc_images = generator(noise)
-        show_latents_images(generated_enc_images)
+        show_latents_images(generated_enc_images, title)
 
     generator.train()
 
