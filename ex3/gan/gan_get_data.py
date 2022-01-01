@@ -8,7 +8,7 @@ from tqdm import tqdm
 
 from ex3.ae.ae_models import Autoencoder
 from ex3.gan.config import SAVE_DIR
-from ex3.gan.encoded_images_dataset import EncodedImagesDataset
+from ex3.gan.encoded_images_dataset import GeneralDataset
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 BATCH_SIZE = 32
@@ -30,7 +30,7 @@ def get_mnist_data():
     return train_loader, test_loader
 
 
-def get_pretrained_ae():
+def load_pretrained_ae():
     print("get pretrained auto encoder")
 
     latent_dim = 32
@@ -46,7 +46,7 @@ def get_pretrained_ae():
 
 
 def list_to_data_loader(encoded_images):
-    encoded_images_data_set = EncodedImagesDataset(encoded_images)
+    encoded_images_data_set = GeneralDataset(encoded_images)
     encoded_images_data_loader = DataLoader(encoded_images_data_set, batch_size=BATCH_SIZE, shuffle=True)
     return encoded_images_data_loader
 
@@ -82,7 +82,7 @@ def get_encoded_mnist(reload=True):
         encoded_train_images = load_object(train_pickle_path)
         encoded_test_images = load_object(test_pickle_path)
     else:
-        ae = get_pretrained_ae()
+        ae = load_pretrained_ae()
         train_loader, test_loader = get_mnist_data()
         encoded_train_images = encode_images(train_loader, ae)
         encoded_test_images = encode_images(test_loader, ae)

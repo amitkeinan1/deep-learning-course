@@ -5,12 +5,12 @@ from torch.utils.data import DataLoader
 from matplotlib import pyplot as plt
 
 from ex3.gan.config import NOISE_DIM, SAVE_DIR, ENCODING_DIM
-from ex3.gan.encoded_images_dataset import EncodedImagesDataset
-from ex3.gan.gan_get_data import get_pretrained_ae, get_mnist_data, get_encoded_mnist
+from ex3.gan.encoded_images_dataset import GeneralDataset
+from ex3.gan.gan_get_data import load_pretrained_ae, get_mnist_data, get_encoded_mnist
 from ex3.gan.gan_models import generate_noise, Generator
 
 
-def latents_to_images(auto_encoder, latents_loader):
+def ae_latents_to_images(auto_encoder, latents_loader):
     all_images = []
 
     auto_encoder.eval()
@@ -19,6 +19,26 @@ def latents_to_images(auto_encoder, latents_loader):
         for latents in latents_loader:
             images = auto_encoder.decoder.forward(latents)
             all_images += list(images)
+
+    auto_encoder.train()
+
+    return images
+
+
+def gan_latents_to_images(generator, ae, gan_latents_loader):
+    all_images = []
+
+    generator.eval()
+    ae.eval()
+
+    with torch.no_grad():
+        for gan_latents in gan_latents_loader:
+            ae_latents = generator.forward(gan_latents)
+            images = ae.decoder.forward(ae_latents)
+            all_images += list(images)
+
+    generator.train()
+    ae.train()
 
     return images
 
@@ -35,12 +55,18 @@ def show_images(images, title):
     plt.close(figure)
 
 
-def show_latents_images(latents, title):
-    latents_loader = DataLoader(EncodedImagesDataset(latents), batch_size=32)
-    auto_encoder = get_pretrained_ae()
-    images = latents_to_images(auto_encoder, latents_loader)
+def show_ae_latents_images(latents, title):
+    latents_loader = DataLoader(GeneralDataset(latents), batch_size=32)
+    auto_encoder = load_pretrained_ae()
+    images = ae_latents_to_images(auto_encoder, latents_loader)
     show_images(images, title)
 
+def show_gan_latents_images(latents, title):
+    latents_loader = DataLoader(GeneralDataset(latents), batch_size=32)
+    generator = load_saved_gan_generator("final3")
+    ae = load_pretrained_ae()
+    images = gan_latents_to_images(generator, ae, latents_loader)
+    show_images(images, title)
 
 def evaluate_gan_generator(generator, title):
     generator.eval()
@@ -48,7 +74,7 @@ def evaluate_gan_generator(generator, title):
     with torch.no_grad():
         noise = generate_noise(10, NOISE_DIM)
         generated_enc_images = generator(noise)
-        show_latents_images(generated_enc_images, title)
+        show_ae_latents_images(generated_enc_images, title)
 
     generator.train()
 
@@ -70,7 +96,7 @@ def show_random_mnist_images():
 def show_random_ae_mnist_images():
     encoded_train_images, encoded_test_images = get_encoded_mnist()
     for images in encoded_test_images:
-        show_latents_images(images[:10], "mnist encoded and decoded")
+        show_ae_latents_images(images[:10], "mnist encoded and decoded")
         break
 
 
@@ -80,9 +106,5 @@ def show_gan_random_images(training_name):
 
 
 if __name__ == '__main__':
-    # show_random_mnist_images()
-    #
-    # show_random_ae_mnist_images()
-
-    training_name = "final3"
-    show_gan_random_images(training_name)
+    latents = torch.ones(size=(10, 32))
+    show_gan_latents_images(latents, "")
