@@ -51,17 +51,23 @@ def list_to_data_loader(encoded_images):
     return encoded_images_data_loader
 
 
-def encode_images(mnist_data_loader, auto_encoder):
+def encode_images(mnist_data_loader, auto_encoder, return_labels=False):
     print("encoding images")
 
     all_encoded_images = []
+    all_labels = []
     for data in tqdm(mnist_data_loader):
-        curr_images, _ = data
+        curr_images, curr_labels = data
         curr_images = curr_images.to(DEVICE)
         curr_encoded_images = auto_encoder.encoder(curr_images)
         all_encoded_images += list(curr_encoded_images)
-    all_encoded_images = list_to_data_loader(all_encoded_images)
-    return all_encoded_images
+        all_labels += list(curr_labels)
+    if not return_labels:
+        data_to_return = all_encoded_images
+    else:
+        data_to_return = list(zip(all_encoded_images, all_labels))
+    data_loader_to_return = list_to_data_loader(data_to_return)
+    return data_loader_to_return
 
 
 def save_object(object, path):
@@ -75,17 +81,17 @@ def load_object(path):
     return object
 
 
-def get_encoded_mnist(reload=True):
-    train_pickle_path = f"{SAVE_DIR}/encoded_images/encoded_train_images.pkl"
-    test_pickle_path = f"{SAVE_DIR}/encoded_images/encoded_test_images.pkl"
+def get_encoded_mnist(reload=True, conditional=False):
+    train_pickle_path = f"{SAVE_DIR}/encoded_images/encoded_train_images-{conditional}.pkl"
+    test_pickle_path = f"{SAVE_DIR}/encoded_images/encoded_test_images-{conditional}.pkl"
     if reload:
         encoded_train_images = load_object(train_pickle_path)
         encoded_test_images = load_object(test_pickle_path)
     else:
         ae = load_pretrained_ae()
         train_loader, test_loader = get_mnist_data()
-        encoded_train_images = encode_images(train_loader, ae)
-        encoded_test_images = encode_images(test_loader, ae)
+        encoded_train_images = encode_images(train_loader, ae, return_labels=conditional)
+        encoded_test_images = encode_images(test_loader, ae, return_labels=conditional)
         save_object(encoded_train_images, train_pickle_path)
         save_object(encoded_test_images, test_pickle_path)
 
@@ -93,4 +99,5 @@ def get_encoded_mnist(reload=True):
 
 
 if __name__ == '__main__':
-    get_encoded_mnist(reload=False)
+    encoded_train_images, encoded_test_images = get_encoded_mnist(reload=True, conditional=True)
+    pass

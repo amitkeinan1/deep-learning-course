@@ -5,7 +5,8 @@ from torch import nn
 from tqdm import tqdm
 from matplotlib import pyplot as plt
 
-from ex3.gan.config import NOISE_DIM, ENCODING_DIM, GEN_LEARNING_RATE, DIS_LEARNING_RATE, EPOCHS_NUM, SAVE_DIR
+from ex3.gan.config import NOISE_DIM, ENCODING_DIM, GEN_LEARNING_RATE, DIS_LEARNING_RATE, EPOCHS_NUM, SAVE_DIR, \
+    DIGITS_NUM
 from ex3.gan.gan_get_data import get_encoded_mnist
 from ex3.gan.gan_models import Generator, Discriminator, generate_noise
 from ex3.gan.evaluate_gan import evaluate_gan_generator
@@ -22,16 +23,20 @@ def plot_losses(generator_losses, discriminator_losses, title):
     plt.show()
 
 
-def train_gan():
-    train_data, test_data = get_encoded_mnist()
+def train_gan(conditional=False):
+    train_data, test_data = get_encoded_mnist(conditional)
 
     generator_losses = []
     discriminator_losses = []
 
     print("train gan")
 
-    generator = Generator(input_dim=NOISE_DIM, output_dim=ENCODING_DIM)
-    discriminator = Discriminator(input_dim=ENCODING_DIM)
+    if not conditional:
+        generator = Generator(input_dim=NOISE_DIM, output_dim=ENCODING_DIM)
+        discriminator = Discriminator(input_dim=ENCODING_DIM)
+    else:
+        generator = Generator(input_dim=NOISE_DIM + DIGITS_NUM, output_dim=ENCODING_DIM)
+        discriminator = Discriminator(input_dim=ENCODING_DIM + DIGITS_NUM)
 
     criterion = nn.BCELoss()
     generator_optimizer = torch.optim.Adam(generator.parameters(), lr=GEN_LEARNING_RATE)
