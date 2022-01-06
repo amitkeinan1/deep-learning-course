@@ -1,7 +1,9 @@
 import os
+import random
 
 import torch
 from torch import nn
+import torch.nn.functional as F
 from tqdm import tqdm
 from matplotlib import pyplot as plt
 
@@ -21,6 +23,12 @@ def plot_losses(generator_losses, discriminator_losses, title):
     plt.legend()
     plt.savefig(f"{SAVE_DIR}/plots/{title}.png")
     plt.show()
+
+
+def merge_tensor_and_labels(tensor, labels):
+    one_hot_labels = F.one_hot(labels, 10)
+    tensor_and_labels = torch.cat((tensor, one_hot_labels), dim=1)
+    return tensor_and_labels
 
 
 def train_gan(conditional=False):
@@ -48,14 +56,26 @@ def train_gan(conditional=False):
         for real_enc_images in train_data:
             batch_size = real_enc_images.shape[0]
 
+            if conditional:
+                real_enc_images, real_labels = real_enc_images
+
             # train generator
 
             generator_optimizer.zero_grad()
 
             noise = generate_noise(batch_size, NOISE_DIM)
-            generated_enc_images = generator(noise)
+            if not conditional:
+                generated_enc_images = generator(noise)
+            else:
+                random_labels = [random.randint(0, 9) for _ in range(batch_size)]
+                noise_and_labels = merge_tensor_and_labels(noise, random_labels)
+                generated_enc_images = generator(noise_and_labels)
 
-            disc_out_on_gen = discriminator(generated_enc_images)
+            if not conditional:
+                disc_out_on_gen = discriminator(generated_enc_images)
+            else:
+                gen_enc_images_and_labels = merge_tensor_and_labels(generated_enc_images, labels)
+                disc_out_on_gen = discriminator(gen_enc_images_and_labels)
 
             generator_loss = criterion(disc_out_on_gen, torch.ones(
                 size=(batch_size, 1)))  # ones because we want the discriminator to classify as true
@@ -70,12 +90,16 @@ def train_gan(conditional=False):
 
             disc_out_on_gen = discriminator(
                 generated_enc_images.detach())  # detach from graph because now we train the disc.
-            disc_out_on_real = discriminator(real_enc_images)
+            if not conditional:
+                disc_out_on_real = discriminator(real_enc_images)
+            else:
+                real_images_and_labels = merge_tensor_and_labels(real_enc_images, real_labels)
+                disc_out_on_real = discriminator(real_images_and_labels)
             disc_outputs = torch.cat([disc_out_on_gen, disc_out_on_real])
-            labels = torch.cat([torch.zeros(size=(batch_size, 1)),
+            disc_labels = torch.cat([torch.zeros(size=(batch_size, 1)),
                                 torch.ones(size=(batch_size, 1))])  # real labels - zeros for generated, ones for real
 
-            discriminator_loss = criterion(disc_outputs, labels)
+            discriminator_loss = criterion(disc_outputs, disc_labels)
             discriminator_loss.backward()
             discriminator_optimizer.step()
 
