@@ -3,7 +3,6 @@ import random
 
 import torch
 from torch import nn
-import torch.nn.functional as F
 from tqdm import tqdm
 from matplotlib import pyplot as plt
 
@@ -12,6 +11,7 @@ from ex3.gan.config import NOISE_DIM, ENCODING_DIM, GEN_LEARNING_RATE, DIS_LEARN
 from ex3.gan.gan_get_data import get_encoded_mnist
 from ex3.gan.gan_models import Generator, Discriminator, generate_noise
 from ex3.gan.evaluate_gan import evaluate_gan_generator
+from ex3.gan.gan_utils import merge_tensor_and_labels
 
 TRAINING_NAME = "final3"
 
@@ -25,14 +25,8 @@ def plot_losses(generator_losses, discriminator_losses, title):
     plt.show()
 
 
-def merge_tensor_and_labels(tensor, labels):
-    one_hot_labels = F.one_hot(labels, 10)
-    tensor_and_labels = torch.cat((tensor, one_hot_labels), dim=1)
-    return tensor_and_labels
-
-
 def train_gan(conditional=False):
-    train_data, test_data = get_encoded_mnist(conditional)
+    train_data, test_data = get_encoded_mnist(reload=True, conditional=conditional)
 
     generator_losses = []
     discriminator_losses = []
@@ -54,10 +48,10 @@ def train_gan(conditional=False):
         print(f"epoch {epoch_num + 1} from {EPOCHS_NUM} started")
 
         for real_enc_images in train_data:
-            batch_size = real_enc_images.shape[0]
-
             if conditional:
                 real_enc_images, real_labels = real_enc_images
+
+            batch_size = real_enc_images.shape[0]
 
             # train generator
 
@@ -97,7 +91,8 @@ def train_gan(conditional=False):
                 disc_out_on_real = discriminator(real_images_and_labels)
             disc_outputs = torch.cat([disc_out_on_gen, disc_out_on_real])
             disc_labels = torch.cat([torch.zeros(size=(batch_size, 1)),
-                                torch.ones(size=(batch_size, 1))])  # real labels - zeros for generated, ones for real
+                                     torch.ones(
+                                         size=(batch_size, 1))])  # real labels - zeros for generated, ones for real
 
             discriminator_loss = criterion(disc_outputs, disc_labels)
             discriminator_loss.backward()
@@ -117,4 +112,4 @@ def train_gan(conditional=False):
 
 
 if __name__ == '__main__':
-    train_gan()
+    train_gan(conditional=True)

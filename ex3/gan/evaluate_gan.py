@@ -4,7 +4,8 @@ import torch
 from torch.utils.data import DataLoader
 from matplotlib import pyplot as plt
 
-from ex3.gan.config import NOISE_DIM, SAVE_DIR, ENCODING_DIM
+from ex3.gan.config import NOISE_DIM, SAVE_DIR, ENCODING_DIM, DIGITS_NUM
+from ex3.gan.gan_utils import merge_tensor_and_labels
 from ex3.gan.general_dataset import GeneralDataset
 from ex3.gan.gan_get_data import load_pretrained_ae, get_mnist_data, get_encoded_mnist
 from ex3.gan.gan_models import generate_noise, Generator
@@ -61,6 +62,7 @@ def show_ae_latents_images(latents, title):
     images = ae_latents_to_images(auto_encoder, latents_loader)
     show_images(images, title)
 
+
 def show_gan_latents_images(latents, title):
     latents_loader = DataLoader(GeneralDataset(latents), batch_size=32)
     generator = load_saved_gan_generator("final3")
@@ -68,12 +70,18 @@ def show_gan_latents_images(latents, title):
     images = gan_latents_to_images(generator, ae, latents_loader)
     show_images(images, title)
 
-def evaluate_gan_generator(generator, title):
+
+def evaluate_gan_generator(generator, title, conditional):
     generator.eval()
 
     with torch.no_grad():
-        noise = generate_noise(10, NOISE_DIM)
-        generated_enc_images = generator(noise)
+        examples_num = 10
+        if not conditional:
+            gen_input = generate_noise(examples_num, NOISE_DIM)
+        if conditional:
+            labels = list(range(DIGITS_NUM))
+            gen_input = merge_tensor_and_labels(noise, labels)
+        generated_enc_images = generator(gen_input)
         show_ae_latents_images(generated_enc_images, title)
 
     generator.train()
