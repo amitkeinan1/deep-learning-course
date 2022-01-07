@@ -1,10 +1,12 @@
 import os
 import random
+from datetime import datetime
 
 import torch
 from torch import nn
 from tqdm import tqdm
 from matplotlib import pyplot as plt
+import numpy as np
 
 from ex3.gan.config import NOISE_DIM, ENCODING_DIM, GEN_LEARNING_RATE, DIS_LEARNING_RATE, EPOCHS_NUM, SAVE_DIR, \
     DIGITS_NUM
@@ -13,10 +15,20 @@ from ex3.gan.gan_models import Generator, Discriminator, generate_noise
 from ex3.gan.evaluate_gan import evaluate_gan_generator
 from ex3.gan.gan_utils import merge_tensor_and_labels
 
-TRAINING_NAME = "final3"
+current_time = datetime.now().strftime("%H:%M:%S").replace(':', '-')
+
+TRAINING_NAME = f"conditional-{current_time}"
 
 
-def plot_losses(generator_losses, discriminator_losses, title):
+def smooth_list(list1, n=1000):
+    smoothed_list = [np.mean(list1[i - n: i + n]) for i in range(n, len(list1) - n)]
+    return smoothed_list
+
+
+def plot_losses(generator_losses, discriminator_losses, title, smoothed=False):
+    if smoothed:
+        generator_losses = smooth_list(generator_losses)
+        discriminator_losses = smooth_list(discriminator_losses)
     plt.title(f"training losses - {title}")
     plt.plot(generator_losses, color='r', label="generator")
     plt.plot(discriminator_losses, color='b', label="discriminator")
@@ -61,15 +73,15 @@ def train_gan(conditional=False):
             if not conditional:
                 generated_enc_images = generator(noise)
             else:
-                random_labels = [random.randint(0, 9) for _ in range(batch_size)]
+                random_labels = torch.tensor([random.randint(0, 9) for _ in range(batch_size)])
                 noise_and_labels = merge_tensor_and_labels(noise, random_labels)
                 generated_enc_images = generator(noise_and_labels)
 
             if not conditional:
-                disc_out_on_gen = discriminator(generated_enc_images)
+                disc_input = generated_enc_images
             else:
-                gen_enc_images_and_labels = merge_tensor_and_labels(generated_enc_images, labels)
-                disc_out_on_gen = discriminator(gen_enc_images_and_labels)
+                disc_input = merge_tensor_and_labels(generated_enc_images, random_labels)
+            disc_out_on_gen = discriminator(disc_input)
 
             generator_loss = criterion(disc_out_on_gen, torch.ones(
                 size=(batch_size, 1)))  # ones because we want the discriminator to classify as true
@@ -82,8 +94,7 @@ def train_gan(conditional=False):
 
             discriminator_optimizer.zero_grad()
 
-            disc_out_on_gen = discriminator(
-                generated_enc_images.detach())  # detach from graph because now we train the disc.
+            disc_out_on_gen = discriminator(disc_input.detach())  # detach from graph because now we train the disc.
             if not conditional:
                 disc_out_on_real = discriminator(real_enc_images)
             else:
@@ -101,12 +112,12 @@ def train_gan(conditional=False):
             discriminator_losses.append(discriminator_loss.item())
 
         title = f"{TRAINING_NAME} - epoch {epoch_num}"
-        plot_losses(generator_losses, discriminator_losses, title)
-        evaluate_gan_generator(generator, title)
+        plot_losses(generator_losses, discriminator_losses, title, smoothed=True)
+        evaluate_gan_generator(generator, title, conditional)
 
     title = f"{TRAINING_NAME} - final"
-    plot_losses(generator_losses, discriminator_losses, f"final - {TRAINING_NAME}")
-    evaluate_gan_generator(generator, title)
+    plot_losses(generator_losses, discriminator_losses, f"final - {TRAINING_NAME}", smoothed=True)
+    evaluate_gan_generator(generator, title, conditional)
     torch.save(generator.state_dict(), os.path.join(SAVE_DIR, "gans", f"{TRAINING_NAME}-generator.model"))
     torch.save(discriminator.state_dict(), os.path.join(SAVE_DIR, "gans", f"{TRAINING_NAME}-discriminator.model"))
 

@@ -76,10 +76,11 @@ def evaluate_gan_generator(generator, title, conditional):
 
     with torch.no_grad():
         examples_num = 10
+        noise = generate_noise(examples_num, NOISE_DIM)
         if not conditional:
-            gen_input = generate_noise(examples_num, NOISE_DIM)
+            gen_input = noise
         if conditional:
-            labels = list(range(DIGITS_NUM))
+            labels = torch.tensor(list(range(DIGITS_NUM)))
             gen_input = merge_tensor_and_labels(noise, labels)
         generated_enc_images = generator(gen_input)
         show_ae_latents_images(generated_enc_images, title)

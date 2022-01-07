@@ -100,4 +100,3 @@ def get_encoded_mnist(reload=True, conditional=False):
 
 if __name__ == '__main__':
     encoded_train_images, encoded_test_images = get_encoded_mnist(reload=True, conditional=True)
-    pass
