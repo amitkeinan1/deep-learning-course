@@ -81,7 +81,7 @@ def evaluate_gan_generator(generator, title, conditional):
             gen_input = noise
         if conditional:
             labels = torch.tensor(list(range(DIGITS_NUM)))
-            labels = torch.tensor([9] * 10)
+            # labels = torch.tensor([9] * 10)
             gen_input = merge_tensor_and_labels(noise, labels)
         generated_enc_images = generator(gen_input)
         show_ae_latents_images(generated_enc_images, title)
