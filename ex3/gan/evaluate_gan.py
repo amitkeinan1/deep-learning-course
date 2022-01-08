@@ -65,7 +65,7 @@ def show_ae_latents_images(latents, title):
 
 def show_gan_latents_images(latents, title):
     latents_loader = DataLoader(GeneralDataset(latents), batch_size=32)
-    generator = load_saved_gan_generator("final3")
+    generator = load_saved_gan_generator("conditional-15-21-33")
     ae = load_pretrained_ae()
     images = gan_latents_to_images(generator, ae, latents_loader)
     show_images(images, title)
@@ -81,6 +81,7 @@ def evaluate_gan_generator(generator, title, conditional):
             gen_input = noise
         if conditional:
             labels = torch.tensor(list(range(DIGITS_NUM)))
+            labels = torch.tensor([9] * 10)
             gen_input = merge_tensor_and_labels(noise, labels)
         generated_enc_images = generator(gen_input)
         show_ae_latents_images(generated_enc_images, title)
@@ -88,9 +89,12 @@ def evaluate_gan_generator(generator, title, conditional):
     generator.train()
 
 
-def load_saved_gan_generator(training_name):
+def load_saved_gan_generator(training_name, conditional):
     generator_path = os.path.join(SAVE_DIR, "gans", f"{training_name}-generator.model")
-    generator = Generator(input_dim=NOISE_DIM, output_dim=ENCODING_DIM)
+    if not conditional:
+        generator = Generator(input_dim=NOISE_DIM, output_dim=ENCODING_DIM)
+    else:
+        generator = Generator(input_dim=NOISE_DIM + DIGITS_NUM, output_dim=ENCODING_DIM)
     generator.load_state_dict(torch.load(generator_path))
     return generator
 
@@ -109,11 +113,10 @@ def show_random_ae_mnist_images():
         break
 
 
-def show_gan_random_images(training_name):
-    generator = load_saved_gan_generator(training_name)
-    evaluate_gan_generator(generator, training_name)
+def show_gan_random_images(training_name, conditional):
+    generator = load_saved_gan_generator(training_name, conditional)
+    evaluate_gan_generator(generator, training_name, conditional)
 
 
 if __name__ == '__main__':
-    latents = torch.ones(size=(10, 32))
-    show_gan_latents_images(latents, "")
+    show_gan_random_images("conditional-15-21-33", conditional=True)

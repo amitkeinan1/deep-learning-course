@@ -9,16 +9,19 @@ class Generator(nn.Module):
 
         hidden_1_size = 64
         hidden_2_size = 32
+        hidden_3_size = 16
 
         self.linear1 = nn.Linear(int(input_dim), hidden_1_size)
         self.linear2 = nn.Linear(hidden_1_size, hidden_2_size)
-        self.linear3 = nn.Linear(hidden_2_size, int(output_dim))
+        self.linear_2_5 = nn.Linear(hidden_2_size, hidden_3_size)
+        self.linear3 = nn.Linear(hidden_3_size, int(output_dim))
 
         self.relu = nn.ReLU()
 
     def forward(self, x):
         x = self.relu(self.linear1(x))
         x = self.relu(self.linear2(x))
+        x = self.relu(self.linear_2_5(x))
         x = self.linear3(x)
         return x
 
